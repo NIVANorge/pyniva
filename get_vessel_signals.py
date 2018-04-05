@@ -7,8 +7,8 @@ import sys
 import logging
 from datetime import datetime, timedelta
 
-from nivaplatform import Vessel, TimeSeries, token2header, META_HOST, PUB_PLATFORM
-from nivaplatform import PUB_DETAIL, TSB_HOST, PUB_SIGNAL
+from pyniva import Vessel, TimeSeries, token2header, META_HOST, PUB_PLATFORM
+from pyniva import PUB_DETAIL, TSB_HOST, PUB_SIGNAL
 
 def main(token_file=None):
     if token_file is not None:

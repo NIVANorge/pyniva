@@ -1,5 +1,5 @@
-# NIVA Platform
-Library and API wrapper(s) for programatic (Python) access to data in NIVA's data platform
+# `pyniva` -- wrapper for NIVA Platform
+Python library and API wrapper(s) for programatic access to data in NIVA's data platform
 and services.
 
 Currently the following parts/APIs are supported:
@@ -7,18 +7,25 @@ Currently the following parts/APIs are supported:
 * `tsb` for access to time series data (including FerryBox)
 
 ## metaflow
+FIXME: General information and link to detailed information
 
 ## tsb
+FIXME: General information and link to detailed information
 
 
 # Installation
 The package and all it's dependencies can be installed using `pip` (setuptools)
 
 * Download and unpack the source code
-* Navigate to `nivaplatform` directory
 ```
-$ cd nivaplatform
+$ git clone git@github.com:NIVANorge/pyniva.git
 ```
+
+* Navigate to `pyniva` directory
+```
+$ cd pyniva
+```
+
 * Install package using pip install
 ```
 pip install --editable .
@@ -26,12 +33,13 @@ pip install --editable .
 
 
 ## Examples
-
+FIXME: more and better examples
+ 
 ```python
 from datetime import datetime, timedelta
 
-from nivaplatform import Vessel, TimeSeries, token2header, META_HOST, PUB_PLATFORM
-from nivaplatform import PUB_DETAIL, TSB_HOST, PUB_SIGNAL
+from pyniva import Vessel, TimeSeries, token2header, META_HOST, PUB_PLATFORM
+from pyniva import PUB_DETAIL, TSB_HOST, PUB_SIGNAL
 
 vessel_list = Vessel.list(meta_list, header=header)
 for v in vessel_list:
