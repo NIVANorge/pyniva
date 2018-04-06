@@ -65,8 +65,11 @@ query period (ISO8601 time-stamp string).
 In addition the API support the following additional parameters:
 * *dt*, time span in aggregation [ISO8601](https://en.wikipedia.org/wiki/ISO_8601#Durations)
   representation of time window
-* *agg_type*, aggregation type, possible values:
-  "avg" (default), "min", "max", "sum", "count", "stddev", "mode", "median" 
+* FIXME: check name of this one *agg_type*, aggregation type, possible values:
+  "avg" (default), "min", "max", "sum", "count", "stddev", "mode", "median" and "percentile"
+* *percentile* if agg_type is percentile the API aslo requires this parameter to be
+  set, floating point number between 0 and 1
+
 
 
 NOTE:
@@ -105,11 +108,13 @@ The package uses these non standard Python libraries.
 * [requests](https://pypi.python.org/pypi/requests/)
 * [pyjwt](https://pypi.python.org/pypi/PyJWT/)
 * [cryptography](https://pypi.python.org/pypi/cryptography/)
+
 All the packages will be installed automaticalluy if `pyniva` is installed
 using pip (as indicated above).
 
 
-## Examples
+## Usage and examples
+
 FIXME: more and better examples
 
 ```python
