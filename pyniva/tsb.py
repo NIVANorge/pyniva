@@ -20,7 +20,7 @@ PUB_SIGNAL = "https://ferrybox-api.niva.no/v1/signal/"
 
 # "Internal" endpoints for data
 TSB_HOST_ADDR = os.environ.get("TSB_SERVICE_HOST", "localhost")
-TSB_HOST_PORT = os.environ.get("TSB_SERVICE_PORT", 5555)
+TSB_HOST_PORT = os.environ.get("TSB_SERVICE_PORT", 5554)
 TSB_HOST = "http://" + TSB_HOST_ADDR + ":" + str(TSB_HOST_PORT) + "/ts/"
 
 
@@ -121,6 +121,8 @@ def get_signals(signals_url, uuids, **kwargs):
 
     
     # print(query_url)
+    print(params)
+    print(query_url)
     data = get_data(query_url, params=params, headers=header)
 
     if len(data) == 0:

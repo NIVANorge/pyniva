@@ -6,11 +6,15 @@ Script to read time series tsb backend
 import sys
 import logging
 from datetime import datetime, timedelta
+import re
+from dateutil.parser import parse
 
 from pyniva import Vessel, TimeSeries, token2header, META_HOST, PUB_PLATFORM
 from pyniva import PUB_DETAIL, TSB_HOST, PUB_SIGNAL
 
-def main(token_file=None):
+def main(start_time=None, end_time=None, token_file=None,
+         all_signals=False, out_file_prefix=None,
+         noffill=None, dt=None):
     if token_file is not None:
         # Use public NIVA endpoint
         header = token2header(token_file)
@@ -23,6 +27,18 @@ def main(token_file=None):
         meta_host = META_HOST
         meta_list = META_HOST
         tsb_host = TSB_HOST
+    
+    if end_time is not None:
+        end_time = parse(end_time)
+    else:
+        end_time = datetime.utcnow()
+    if start_time:
+        start_time = parse(start_time)
+    else:
+        start_time = end_time - timedelta(5)
+
+    if dt is None:
+        dt = "PT0H"
 
     # Query list of avaliable vessels
     v_list = Vessel.list(meta_list, header=header)
@@ -31,27 +47,46 @@ def main(token_file=None):
         # Get signals the vessel
         signals = v.get_all_tseries(meta_host, header=header)
 
-        int_signals = ["TEMPERATURE",
-                       "TURBIDITY",
-                       "SALINITY",
-                       "gpstrack"]
-
-        int_ts = [ts for sn in int_signals 
-                     for ts in signals 
-                       if sn.lower() in ts.path.lower() and ts.ttype in ("gpstrack", "tseries")]
+        if all_signals:
+            int_ts = signals
+        else:
+            int_signals = ["TEMPERATURE",
+                           "TURBIDITY",
+                           "SALINITY",
+                           "OXYGEN",
+                           "gpstrack"]
+            int_ts = [ts for sn in int_signals 
+                        for ts in signals 
+                        if sn.lower() in ts.path.lower() and ts.ttype in ("gpstrack", "tseries")]
+        
         for ts in int_ts:
             print("  ", ts.path, ":", ts.uuid)
 
         if len(int_ts) > 0:
-            data = TimeSeries.get_timeseries_list(tsb_host, int_ts,
+            if noffill:
+                data = TimeSeries.get_timeseries_list(tsb_host, int_ts,
                                                   start_time=datetime.utcnow() - timedelta(15),
                                                   end_time=datetime.utcnow(),
                                                   header=header,
                                                   noffill=True,
-                                                  dt="PT0H",
+                                                  dt=dt,
                                                   name_headers=True)
-            print(data.shape)
-            print(data.head())
+            else:
+                data = TimeSeries.get_timeseries_list(tsb_host, int_ts,
+                                                  start_time=datetime.utcnow() - timedelta(15),
+                                                  end_time=datetime.utcnow(),
+                                                  header=header,
+                                                  dt=dt,
+                                                  name_headers=True)
+
+            if out_file_prefix:
+                # save the dataframe
+                out_file_name = "%s_%s.csv" % (out_file_prefix,
+                                               re.sub(r'\W', '', v.name))
+                print(out_file_name)
+                data.to_csv(out_file_name)
+            # print(data.shape)
+            # print(data.head())
 
 # end of main function
 
@@ -62,8 +97,22 @@ if __name__ == '__main__':
     # Set up and parse command line arguments
     parser = argparse.ArgumentParser(description=__doc__,
                             formatter_class=argparse.RawDescriptionHelpFormatter)
+    parser.add_argument("-s", "--start-time", required=False, dest="start",
+            help="Start time of query interval", default=None)
+    parser.add_argument("-e", "--end-time", required=False, dest="end",
+            help="End time of query interval", default=None)
     parser.add_argument("-t", "--token-file", required=False, dest="token",
             help="JWT token file (JSON format) for NIVA account", default=None)
+    parser.add_argument("-o", "--out-file-prefix", required=False, dest="out_file_prefix",
+            help="Prefix for output files, if not included nothing is stored", default=None)
+    parser.add_argument("--all-signals", required=False,
+            help="Query all available signals, if not set only selected signals will be quied",
+            action="store_true", dest="all_signals")
+    parser.add_argument("-w", "--time-window", required=False, dest="dt",
+            help="Time window in aggregate, if not included raw data is returned", default=None)    
+    parser.add_argument("--noffill", required=False,
+            help="Turn off ffill when merging with GPS-track",
+            action="store_true", dest="noffill")
     parser.add_argument("--debug", required=False,
             help="Set debug flag for more detailed logging",
             action="store_true", dest="debug")
@@ -84,5 +133,7 @@ if __name__ == '__main__':
         logging.basicConfig(filename=args.logfile, level=log_level, format=LOG_FORMAT)
 
     logging.info("Script started")
-    main(token_file=args.token)
+    main(start_time=args.start, end_time=args.end, token_file=args.token,
+         all_signals=args.all_signals, out_file_prefix=args.out_file_prefix,
+         noffill=args.noffill, dt=args.dt)
     logging.info("Script finished")
