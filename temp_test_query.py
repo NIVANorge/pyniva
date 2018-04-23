@@ -11,6 +11,7 @@ import matplotlib.pyplot as plt
 
 from pyniva import Vessel, TimeSeries, token2header, META_HOST, PUB_PLATFORM
 from pyniva import PUB_DETAIL, TSB_HOST, PUB_SIGNAL
+from dateutil.parser import parse
 
 header = None
 meta_host = META_HOST
@@ -38,7 +39,7 @@ for imo in imos:
     qcts_list = []
     for s in c_signals:
         if 'ferr' in s.path.lower() and '_flag' in s.path.lower() and ('system' in s.path.lower() or 'inlet_temp' in s.path.lower()):
-            print("      ", s.path)
+            print("      ", s.path, ":", s.uuid)
             qcts_list.append(s)
 
     temp_tests = [s for s in qcts_list if 'inlet_temp' in s.path.lower()]
@@ -51,12 +52,12 @@ for imo in imos:
 
 
     data = TimeSeries.get_timeseries_list(tsb_host, ts_total_list,
-                                          start_time=datetime.utcnow() - timedelta(5),
-                                          end_time=datetime.utcnow(),
+                                          start_time=parse('2018-04-16'), #datetime.utcnow() - timedelta(5),
+                                          end_time=parse('2018-04-21'), # datetime.utcnow(),
                                           header=header,
                                           # noffill=True,
                                           dt="PT0H",
-                                          name_headers=True) #,
+                                          name_headers=True)# , # ) #,
                                           # noqc=True)
 
     if data.shape[0] > 0:

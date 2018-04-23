@@ -37,6 +37,8 @@ def main(start_time=None, end_time=None, token_file=None,
     else:
         start_time = end_time - timedelta(5)
 
+    print(start_time, end_time)
+
     if dt is None:
         dt = "PT0H"
 
@@ -65,16 +67,16 @@ def main(start_time=None, end_time=None, token_file=None,
         if len(int_ts) > 0:
             if noffill:
                 data = TimeSeries.get_timeseries_list(tsb_host, int_ts,
-                                                  start_time=datetime.utcnow() - timedelta(15),
-                                                  end_time=datetime.utcnow(),
+                                                  start_time=start_time, # datetime.utcnow() - timedelta(15),
+                                                  end_time=end_time, # datetime.utcnow(),
                                                   header=header,
-                                                  noffill=True,
+                                                  nofill=True,
                                                   dt=dt,
                                                   name_headers=True)
             else:
                 data = TimeSeries.get_timeseries_list(tsb_host, int_ts,
-                                                  start_time=datetime.utcnow() - timedelta(15),
-                                                  end_time=datetime.utcnow(),
+                                                  start_time=start_time, # datetime.utcnow() - timedelta(15),
+                                                  end_time=end_time, # datetime.utcnow(),
                                                   header=header,
                                                   dt=dt,
                                                   name_headers=True)
