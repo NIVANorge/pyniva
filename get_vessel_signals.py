@@ -37,15 +37,16 @@ def main(start_time=None, end_time=None, token_file=None,
     else:
         start_time = end_time - timedelta(5)
 
-    print(start_time, end_time)
+    logging.info("%s -> %s" % (start_time, end_time))
 
     if dt is None:
+        # Query raw data
         dt = "PT0H"
 
     # Query list of avaliable vessels
     v_list = Vessel.list(meta_list, header=header)
     for v in v_list:
-        print(v.name)
+        logging.info("getting signals from %s" % (v.name,))
         # Get signals the vessel
         signals = v.get_all_tseries(meta_host, header=header)
 
@@ -62,7 +63,7 @@ def main(start_time=None, end_time=None, token_file=None,
                         if sn.lower() in ts.path.lower() and ts.ttype in ("gpstrack", "tseries")]
         
         for ts in int_ts:
-            print("  ", ts.path, ":", ts.uuid)
+            logging.info("%s : %s " %  (ts.path, ts.uuid))
 
         if len(int_ts) > 0:
             if noffill:
@@ -85,11 +86,8 @@ def main(start_time=None, end_time=None, token_file=None,
                 # save the dataframe
                 out_file_name = "%s_%s.csv" % (out_file_prefix,
                                                re.sub(r'\W', '', v.name))
-                print(out_file_name)
+                logging.info("saving data to: %s" % (out_file_name,))
                 data.to_csv(out_file_name)
-            # print(data.shape)
-            # print(data.head())
-
 # end of main function
 
 

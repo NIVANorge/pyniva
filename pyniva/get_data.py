@@ -26,12 +26,12 @@ def get_data(url, params=None, headers=None):
        dictionaries for time series data)
     """
     r = rq.get(url, headers=headers, params=params)
-    print(dir(r.request))
-    print(r.url)
+    # print(dir(r.request))
+    # print(r.url)
     if r.status_code >= 400:
         raise RuntimeError(r.content)
     full_data = r.json()
-    print(full_data["header"])
+    # print(full_data["header"])
     
     # If no error occurred the data is found in the "t" attribute of
     # returned data

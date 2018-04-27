@@ -136,7 +136,7 @@ class TimeSeries(Thing):
             uuid_list = [timeseries.uuid,]
         else:
             uuid_list = [ts.uuid for ts in timeseries]
-        print(uuid_list)
+        # print(uuid_list)
         df = get_signals(ts_host, uuid_list, **kwargs)
         if name_headers:
             uuid2meta = {ts.uuid:{"name":ts.name, "path":ts.path} 

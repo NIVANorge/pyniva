@@ -43,7 +43,7 @@ for imo in imos:
             qcts_list.append(s)
 
     temp_tests = [s for s in qcts_list if 'inlet_temp' in s.path.lower()]
-    glob_tests = [s for s in qcts_list if 'system' in s.path.lower()]
+    glob_tests = [s for s in qcts_list if 'system' in s.path.lower() and 'pump_history' in s.path.lower()]
 
     ts_total_list = ts_list + temp_tests + glob_tests
     ts_names = [s.name for s in ts_list]
@@ -52,12 +52,12 @@ for imo in imos:
 
 
     data = TimeSeries.get_timeseries_list(tsb_host, ts_total_list,
-                                          start_time=parse('2018-04-16'), #datetime.utcnow() - timedelta(5),
-                                          end_time=parse('2018-04-21'), # datetime.utcnow(),
+                                          start_time=parse('2018-04-18'), #datetime.utcnow() - timedelta(5),
+                                          end_time=parse('2018-04-24'), # datetime.utcnow(),
                                           header=header,
                                           # noffill=True,
                                           dt="PT0H",
-                                          name_headers=True)# , # ) #,
+                                          name_headers=True) #,
                                           # noqc=True)
 
     if data.shape[0] > 0:

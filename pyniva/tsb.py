@@ -121,8 +121,8 @@ def get_signals(signals_url, uuids, **kwargs):
 
     
     # print(query_url)
-    print(params)
-    print(query_url)
+    # print(params)
+    # print(query_url)
     data = get_data(query_url, params=params, headers=header)
 
     if len(data) == 0:
