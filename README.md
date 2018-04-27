@@ -65,7 +65,7 @@ query period (ISO8601 time-stamp string).
 In addition the API support the following additional parameters:
 * *dt*, time span in aggregation [ISO8601](https://en.wikipedia.org/wiki/ISO_8601#Durations)
   representation of time window
-* FIXME: check name of this one *agg_type*, aggregation type, possible values:
+* *agg_type*, aggregation type, possible values:
   "avg" (default), "min", "max", "sum", "count", "stddev", "mode", "median" and "percentile"
 * *percentile* if agg_type is percentile the API aslo requires this parameter to be
   set, floating point number between 0 and 1
