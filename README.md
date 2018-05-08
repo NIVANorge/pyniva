@@ -40,22 +40,61 @@ All timestamps returned from the APIs are in UTC.
 All the endpoints return data in JSON format.
 
 
-## metaflow - meta data
-Some information on the meta data model and the Thing universe.
+## metaflow - meta data and "Thing" universe
+`metaflow` is NIVA's service and API for meta data. This service
+allows for searching meta data, and retrieving all stored meta data
+for data objects ("Things").
 
-At the moment there are two endpoints for querying meta data for FerryBox vessels
-and signals:
-* https://ferrybox-api.niva.no/v1/vessels
-Return a list of FerryBox available vessels.
-* https://ferrybox-api.niva.no/v1/details/UuidOfObject
-Used to get additional (complete) information about an object, including
-meta data for signals attached to the object (if present)
+In `metaflow` and in the `pyniva` API-wrapper all data objects are
+represented as `Thing` class instances or a subclass of `Thing`.
+Using the `pyniva` wrapper search and detailed meta data is also
+available through `Thing` classes (see examples bellow).
+
+`pyniva` exposes/includes URLs to public and internal `metaflow`
+endpoints.
+* PUB\_PLATFORM (public endpoints to get list of FerryBox/Glider platforms)
+* PUB\_DETAIL (public endpoint for detailed information about a data object)
+* META\_HOST (internal endpoint for all meta data, edit to fit your installation)
+
+```python
+# Get list of available vessels in metaflow, print their names
+# and the number of avaliable time series for each vessel
+from pyniva import Vessel, PUB_DETAIL, PUB_PLATFORM, token2header
+
+header = token2header("path/to/my/tokenfile.json")
+
+vessel_list = Vessel.list(PUB_PLATFORM, header=header)
+for v in vessel_list:
+    time_series = v.get_all_tseries(PUB_DETAIL, header=header)
+    print(v.name, len(time_series))
+```
+
+To get all available meta data for a `Thing` (or subclass) instance
+you can call the `to_dict()` method which will return all meta data
+as a Python dictionary.
+```python
+print(v.to_dict())
+```
+
+Objects in the `Thing` hierarchy will have different attributes,
+depending on type, etc. For more information take a look at the
+doc-string of the `Thing` instances you are interested in or use the
+Python `dir()` method to examine the object data. In general, any
+key not starting with an `_` in the dictionary returned by `to_dict()`
+is also available as instance attributes.
+All `Thing` or subclass of `Thing` instances
+persisted by `metaflow` will at least have an `uuid` and a
+`ttype` attribute.
 
 
 
 ## tsb - time series data
-`tsb` is the API (service) used to query, aggregate and join time series
-data.
+Time series data is stored in designated time series database(s) and
+the actual data can be accessed through `tsb` service.
+
+Using the `pyniva` library you can access and query data through
+`TimeSeries` objects. This allows direct access to the data
+while hiding the details of the underlying `tsb` service.
 
 * https://ferrybox-api.niva.no/v1/signal/ListOfUuids/StartTime/EndTime
 where the 'ListOfUuids' is a comma separated list of signal UUIDs to query.
@@ -67,7 +106,7 @@ In addition the API support the following additional parameters:
   representation of time window
 * *agg_type*, aggregation type, possible values:
   "avg" (default), "min", "max", "sum", "count", "stddev", "mode", "median" and "percentile"
-* *percentile* if agg_type is percentile the API aslo requires this parameter to be
+* *percentile* if agg\_type is percentile the API also requires this parameter to be
   set, floating point number between 0 and 1
 
 
