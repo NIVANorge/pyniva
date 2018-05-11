@@ -92,10 +92,46 @@ persisted by `metaflow` will at least have an `uuid` and a
 Time series data is stored in designated time series database(s) and
 the actual data can be accessed through `tsb` service.
 
-Using the `pyniva` library you can access and query data through
-`TimeSeries` objects. This allows direct access to the data
-while hiding the details of the underlying `tsb` service.
+The `tsb` API is intended for interactive use, visualization, data
+"dril in" and merging of asynchronous-heterogenous time series data.
+Including merging of data on GPS tracks.
+This means that the typical use of the API is _not_ to downlaod all
+avaliable raw data (which can be huge), instead the user will query
+and fetches aggregated data for a given time interval (typically 1000 or
+less data-ponts pr. time series).
 
+Also note that for time series the API support interactive use and visualization
+by doing server side  aggregating of the data (including aggregation of data
+on (asynchronous) GPS tracks).
+This means that the consumer should avoid using the API to download all raw data
+for client side aggregation etc.
+
+
+Using the `pyniva` library you can access and query data through
+`TimeSeries` objects (or subclasses). This allows direct access to the data
+while hiding the details of the underlying `tsb` service.
+When querying through `pyniva` data is returned as time indexed
+[Pandas](https://pandas.pydata.org/) which is convenient for further
+analyses, plotting, data export, etc.
+
+The `tsb` system holds and handles three kinds of asynchron time series:
+* "normal" time series (`TimeSeries` class),
+  which is a time indexes sequence of single numerical
+  (floating point) values, i.e. one numerical value for each time stamp,
+  for this datatype there can also be a quality flag for each measuremen.
+  This flag will typically be -1 for "bad quality",
+  0 for quality flag not set, or +1 for "good quality". When querying data
+  you can filter on the flag (but the actual flags are not returned).
+* Flags and/or event data time series (`FlagTimeSeries` class), implemented as a
+  time indexed sequence of integers. This datatype is also used for
+  individual data quality flags. For this datatype the standard aggregation
+  type is `mode` which returns the most frequent value in the interval.
+* GPS tracks (`GPSTrack` class), which is a time indexed sequence of
+  longitud and latitude values (WGS84). GPS tracks can be used for geo-fencing
+  and they are aggregaetd by keeping actual data at (near) wanted time intervals.
+
+
+WORKING HERE:
 * https://ferrybox-api.niva.no/v1/signal/ListOfUuids/StartTime/EndTime
 where the 'ListOfUuids' is a comma separated list of signal UUIDs to query.
 The 'StartTime' and 'EndTime' parameters are the start and end time for the

@@ -46,7 +46,7 @@ def main(start_time=None, end_time=None, token_file=None,
     # Query list of avaliable vessels
     v_list = Vessel.list(meta_list, header=header)
     for v in v_list:
-        logging.info("getting signals from %s" % (v.name,))
+        logging.info("getting signals from %s : %s" % (v.name, v.uuid))
         # Get signals the vessel
         signals = v.get_all_tseries(meta_host, header=header)
 
