@@ -92,23 +92,26 @@ persisted by `metaflow` will at least have an `uuid` and a
 Time series data is stored in designated time series database(s) and
 the actual data can be accessed through `tsb` service.
 
+`pyniva` exposes/includes URLs to public and internal `tsb`
+endpoints.
+* PUB\_SIGNAL (public endpoint for time series data)
+* TSB\_HOST (internal  endpoint for time series data)
+
 The `tsb` API is intended for interactive use, visualization, data
 "dril in" and merging of asynchronous-heterogenous time series data.
 Including merging of data on GPS tracks.
 This means that the typical use of the API is _not_ to downlaod all
 avaliable raw data (which can be huge), instead the user will query
-and fetches aggregated data for a given time interval (typically 1000 or
-less data-ponts pr. time series).
-
-Also note that for time series the API support interactive use and visualization
-by doing server side  aggregating of the data (including aggregation of data
-on (asynchronous) GPS tracks).
-This means that the consumer should avoid using the API to download all raw data
-for client side aggregation etc.
+and fetches aggregated data for a given time interval (sefault is
+approximately 1000 data-ponts pr. time series).
+The default number of data points can be overridden by setting
+the `n` or `dt` parameter in the query. `dt=0` returns raw data
+(not reccomended for large datasets).
 
 
 Using the `pyniva` library you can access and query data through
-`TimeSeries` objects (or subclasses). This allows direct access to the data
+`TimeSeries` class (or subclasses) or `TimeSeries` instances.
+This allows direct access to the data
 while hiding the details of the underlying `tsb` service.
 When querying through `pyniva` data is returned as time indexed
 [Pandas](https://pandas.pydata.org/) which is convenient for further
@@ -129,32 +132,94 @@ The `tsb` system holds and handles three kinds of asynchron time series:
 * GPS tracks (`GPSTrack` class), which is a time indexed sequence of
   longitud and latitude values (WGS84). GPS tracks can be used for geo-fencing
   and they are aggregaetd by keeping actual data at (near) wanted time intervals.
+  Note that if a `GPSTrack` is in the query list data will be merged with the track
+  and the aggregation intervals will be dictated by the data in the `GPSTrack`
+
+The `TimeSeries` class has two methods for quering time series data:
+* `get_tseries()` (instance method) to queries and fetch data corresponding to
+  the instance in question.
+* `get_timeseries_list()` (class method) which takes a list of `TimeSeries`
+  instances and return a joined dataset for the time series.
+
+### Query parameters
+These interfaces takes and requiers the same set of parameters. The following
+parameters are must be included:
+* *ts_host*, url for the `tsb` service (in practice this will be `PUB_SIGNAL` or `TSB_HOST`)
+* *headers*, if `PUB_SIGNAL` is used a `JWT` header must also be included
+  (for documentation see `token2header()` documentation above)
+* *a time range* for the query
+
+There are two ways to specify the time span The parameters used to set the time range in a query are:
+* `start_time` and `end_time` (start and end time of query)
+* `ts` (time span of query)
+
+All timestamps and time spans are assumed to be ISO8601 formatted string, with
+one exception: `end_time=now` which will force end-time into `datetime.utcnow()`
+ 
+Time intervals can be expressed in several ways with a combination of the three parameters:
+1. As an ISO8601 time interval ("ts") parameter with start and end time.
+   Examples: `ts=2007-03-01T13:00:00Z/2008-05-11T15:30:00Z`
+             `ts=P1Y2M10DT2H30M/2008-05-11T15:30:00Z`
+2. As explicit start and end parameters (ISO8601 formatted)
+       Example: `start_time=2017-01-01T00:10:10.82812`
+                `end_time=2017-02-01T10:21:33.15`
+3. As a time interval parameter ("ts") and either a corresponding
+       "start" or "end" parameter or implicit end=now by omitting 
+       start/end parameters.
+       Example: `ts=PT1H10M10.03S`
+                `end=2013-10-12T10`
+       Example: `ts=P1M` (one month ending now)
+
+Also note that the API has the following default behavior:
+1. If start and end parameters are both given any given "ts" parameter will be ignored 
+2. If no parameters are given the function will return one week ending now
+3. If only a time span (without start or end) are given end time is set to now
 
 
-WORKING HERE:
-* https://ferrybox-api.niva.no/v1/signal/ListOfUuids/StartTime/EndTime
-where the 'ListOfUuids' is a comma separated list of signal UUIDs to query.
-The 'StartTime' and 'EndTime' parameters are the start and end time for the
-query period (ISO8601 time-stamp string).
-
+#### Optional parameters
 In addition the API support the following additional parameters:
+* *n* (integer): approximate number of data-points to return from the query
 * *dt*, time span in aggregation [ISO8601](https://en.wikipedia.org/wiki/ISO_8601#Durations)
   representation of time window
 * *agg_type*, aggregation type, possible values:
   "avg" (default), "min", "max", "sum", "count", "stddev", "mode", "median" and "percentile"
 * *percentile* if agg\_type is percentile the API also requires this parameter to be
   set, floating point number between 0 and 1
+* *dt* (string or flaot): time span for time aggregation of query.
+  Must be a valid ISO8601 time span string (without begin and end time)
+  like "P1D4H" or a float with the number of seconds in the time
+  aggregation window.
+  Also note that the API don't guarantee that the returned time spans will match the requested string, it will just try to
+  match it as close as possible with a valid Timescale [time aggregation string](http://docs.timescale.com/latest/api#select).
+  For more information about ISO8601 time spans see [https://en.wikipedia.org/wiki/ISO_8601#Durations](https://en.wikipedia.org/wiki/ISO_8601#Durations)
+* *noqc* (flag, true if included): flag to ignore the Data Quality flag in the query.
+  If not included only data which has passed the data quality check will be returned. 
+* *region* (WKT string): Only return data from inside a given geographical region.
+  The argument must be a region (polygon) defined as a
+  [WKT](https://en.wikipedia.org/wiki/Well-known_text) string where the
+  coordinates are assumed to be in [WGS84](https://en.wikipedia.org/wiki/World_Geodetic_System)
+  format.
+  Also note: if a region is supplied the query _must also include_ a uuid for an existing GPS track.
 
 
 
-NOTE:
+### Notes and chevats
 * *Time aggregation*: You are not guarantied to get the exact time spans asked for
   the server will try to match the requested time windows with 1, 2, 5, 10 or 30
-  multiples of seconds, minutes, hours and days. And return the nearest match 
+  multiples of seconds, minutes, hours and days. And return the nearest match.
+  Raw data is returned if `dt=0` is set. 
 * *Geo fencing*: Since only data from withing a particular geographical region is
   returned in the query, you must include the uuid of the vessels GPS-track
   in order to receive data. Also the time spans in the time aggregation will
   match the actual time stamps in the GPS track signal.
+* For normal time series queries are _filtered on the data quality_ flag,
+  meaning that only data points which has passed QC is included in the
+  returned result. This behavioyur can be overriden using the `noqc` query flag.
+* If a GPS-track is included in the query _data is merged with the track_,
+   and the GPS-track data is returned as `longitude` and `latitude`.
+     1. Only one GPS-track can be submitted at the time
+     1. Aggregation level is forced to the GPS-track, with actual
+        GPS-track time stamps.
 
 
 
