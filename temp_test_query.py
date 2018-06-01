@@ -9,8 +9,8 @@ from datetime import datetime, timedelta
 import re
 import matplotlib.pyplot as plt
 
-from pyniva import Vessel, TimeSeries, token2header, META_HOST, PUB_PLATFORM
-from pyniva import PUB_DETAIL, TSB_HOST, PUB_SIGNAL
+from pyniva import Vessel, TimeSeries, token2header
+from pyniva import META_HOST, PUB_META, TSB_HOST, PUB_TSB
 
 from dateutil.parser import parse
 
@@ -23,14 +23,12 @@ def main(start_time=None, end_time=None, token_file=None, dt=None):
     if token_file is not None:
         # Use public NIVA endpoint
         header = token2header(token_file)
-        meta_host = PUB_DETAIL
-        meta_list = PUB_PLATFORM
-        tsb_host = PUB_SIGNAL
+        meta_host = PUB_META
+        tsb_host = PUB_TSB
     else:
         # Use internal metaflow and tsb endpoints
         header = None
         meta_host = META_HOST
-        meta_list = META_HOST
         tsb_host = TSB_HOST
 
 
@@ -49,7 +47,7 @@ def main(start_time=None, end_time=None, token_file=None, dt=None):
         # Query raw data
         dt = "PT0H"
 
-    vessels = Vessel.list(meta_list, header=header)
+    vessels = Vessel.list(meta_host, header=header)
     vessels = [v for v in vessels if hasattr(v, "imo") and v.imo in imos]
     for v in vessels:
         # v = Vessel.get_thing(meta_host, {"imo": imo})

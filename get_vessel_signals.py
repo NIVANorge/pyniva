@@ -9,8 +9,8 @@ from datetime import datetime, timedelta
 import re
 from dateutil.parser import parse
 
-from pyniva import Vessel, TimeSeries, token2header, META_HOST, PUB_META
-from pyniva import PUB_DETAIL, TSB_HOST, PUB_SIGNAL
+from pyniva import Vessel, TimeSeries, token2header
+from pyniva import META_HOST, PUB_META, TSB_HOST, PUB_TSB
 
 def main(start_time=None, end_time=None, token_file=None,
          all_signals=False, out_file_prefix=None,
@@ -18,14 +18,12 @@ def main(start_time=None, end_time=None, token_file=None,
     if token_file is not None:
         # Use public NIVA endpoint
         header = token2header(token_file)
-        meta_host = PUB_DETAIL
-        meta_list = PUB_PLATFORM
-        tsb_host = PUB_SIGNAL
+        meta_host = PUB_META
+        tsb_host = PUB_TSB
     else:
         # Use internal metaflow and tsb endpoints
         header = None
         meta_host = META_HOST
-        meta_list = META_HOST
         tsb_host = TSB_HOST
     
     if end_time is not None:
@@ -44,7 +42,7 @@ def main(start_time=None, end_time=None, token_file=None,
         dt = "PT0H"
 
     # Query list of avaliable vessels
-    v_list = Vessel.list(meta_list, header=header)
+    v_list = Vessel.list(meta_host, header=header)
     for v in v_list:
         logging.info("getting signals from %s : %s" % (v.name, v.uuid))
         # Get signals the vessel
