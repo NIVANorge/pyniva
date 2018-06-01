@@ -9,7 +9,7 @@ from datetime import datetime, timedelta
 import re
 from dateutil.parser import parse
 
-from pyniva import Vessel, TimeSeries, token2header, META_HOST, PUB_PLATFORM
+from pyniva import Vessel, TimeSeries, token2header, META_HOST, PUB_META
 from pyniva import PUB_DETAIL, TSB_HOST, PUB_SIGNAL
 
 def main(start_time=None, end_time=None, token_file=None,

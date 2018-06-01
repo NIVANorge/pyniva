@@ -52,8 +52,7 @@ available through `Thing` classes (see examples bellow).
 
 `pyniva` exposes/includes URLs to public and internal `metaflow`
 endpoints.
-* PUB\_PLATFORM (public endpoints to get list of FerryBox/Glider platforms)
-* PUB\_DETAIL (public endpoint for detailed information about a data object)
+* PUB\_META (public endpoints to get meta data)
 * META\_HOST (internal endpoint for all meta data, edit to fit your installation)
 
 ```python
@@ -94,7 +93,7 @@ the actual data can be accessed through `tsb` service.
 
 `pyniva` exposes/includes URLs to public and internal `tsb`
 endpoints.
-* PUB\_SIGNAL (public endpoint for time series data)
+* PUB\_TSB (public endpoint for time series data)
 * TSB\_HOST (internal  endpoint for time series data)
 
 The `tsb` API is intended for interactive use, visualization, data

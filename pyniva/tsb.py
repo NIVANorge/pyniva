@@ -3,7 +3,7 @@
 """
 Script to connect to NIVA API to query FerryBox data
 """
-__all__ = ["TSB_HOST", "PUB_SIGNAL", "get_signals", "ts_list2df"]
+__all__ = ["TSB_HOST", "PUB_TSB", "get_signals", "ts_list2df"]
 import os
 from datetime import datetime, timedelta
 import json
@@ -16,7 +16,8 @@ from .get_data import get_data, token2header
 
 
 # "Public" endpoints for data
-PUB_SIGNAL = "https://ferrybox-api.niva.no/v1/signal/"
+# PUB_SIGNAL = "https://ferrybox-api.niva.no/v1/signal/"
+PUB_TSB = "https://ferrybox-api.niva.no/v1/tsb/"
 
 # "Internal" endpoints for data
 TSB_HOST_ADDR = os.environ.get("TSB_SERVICE_HOST", "localhost")
@@ -36,7 +37,6 @@ def ts_list2df(ts_dict_list):
     Returns:
         Time indexed pandas dictionary with data in list
     """ 
-    # print(ts_dict_list)
     assert(len(ts_dict_list) > 0)
     keys_set = set([k for rd in ts_dict_list for k in rd.keys()])
     assert("time" in keys_set)
@@ -93,36 +93,24 @@ def get_signals(signals_url, uuids, **kwargs):
        A Pandas DataFrame with the data returned
        If no data is returned an empty DataFrame is returned.
     """
-    assert("start_time" in kwargs and "end_time" in kwargs)
+    
 
     header = kwargs.get("header")
     if "header" in kwargs:
         del kwargs["header"]
 
-    ### FIXME: move parameters to **kwargs
-    if signals_url.startswith(PUB_SIGNAL):
-        query_url = signals_url + ",".join(uuids) + "/" + kwargs["start_time"].isoformat()\
-                     + "/" + kwargs["end_time"].isoformat()
+    query_url = signals_url
+    params = {}
+    if "start_time" in kwargs:
+        params["start"] = kwargs["start_time"].isoformat()
         del kwargs["start_time"]
+    if "end_time" in kwargs:
+        params["end"] =  kwargs["end_time"].isoformat()
         del kwargs["end_time"]
-        params = {}
-        for k, v in kwargs.items():
-            #### FIXME: implement test for "legal" parameters
-            params[k] = v
-    else:
-        query_url = signals_url
-        params = {"start": kwargs["start_time"].isoformat(),
-                  "end": kwargs["end_time"].isoformat()}
-        del kwargs["start_time"]
-        del kwargs["end_time"]
-        for k, v in kwargs.items():
-            params[k] = v
-        params["uuid"] = ",".join(uuids)
+    for k, v in kwargs.items():
+        params[k] = v
+    params["uuid"] = ",".join(uuids)
 
-    
-    # print(query_url)
-    # print(params)
-    # print(query_url)
     data = get_data(query_url, params=params, headers=header)
 
     if len(data) == 0:

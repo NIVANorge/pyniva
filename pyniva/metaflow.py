@@ -4,7 +4,7 @@ Set of helper functions used to get, query, traverse and manipulate
 Meta data in the metaflow service
 """
 
-__all__ = ["META_HOST", "PUB_PLATFORM", "PUB_DETAIL", "get_thing", "update_thing",
+__all__ = ["META_HOST", "PUB_PLATFORM", "PUB_DETAIL", "PUB_META", "get_thing", "update_thing",
            "thing_tree2ts", "path2all_ts"]
 
 import requests as rq
@@ -23,10 +23,8 @@ META_HOST = "http://" + META_HOST_ADDR + ":" + str(META_HOST_PORT) + "/"
 # "Public" endpoints for meta-data
 PUB_PLATFORM = "https://ferrybox-api.niva.no/v1/vessels"
 PUB_DETAIL = "https://ferrybox-api.niva.no/v1/details/"
+PUB_META = "https://ferrybox-api.niva.no/v1/metaflow/"
 
-
-vessel_list_url = "https://ferrybox-api.niva.no/v1/vessels"
-info_base_url = "https://ferrybox-api.niva.no/v1/details/"
 
 
 def get_thing(meta_host, par, header=None):
@@ -44,6 +42,7 @@ def get_thing(meta_host, par, header=None):
         meta_host = meta_host + par["uuid"]
         del par["uuid"]
 
+    # print(meta_host, par, header)
     r = rq.get(meta_host, params=par, headers=header)
     t = r.json()
     assert("t" in t)
