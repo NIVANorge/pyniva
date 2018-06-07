@@ -181,8 +181,12 @@ class TimeSeries(Thing):
 
 
     def get_tseries(self, ts_host, **kwargs):
-        return self.get_timeseries_list(ts_host, name_headers=True,
+        return self.get_timeseries_list(ts_host, [self,], name_headers=True,
                                         **kwargs)
+
+    def get_ts(self, ts_host, **kwargs):
+        return self.get_tseries(ts_host, **kwargs)
+
 
     @property
     def start_time(self):
