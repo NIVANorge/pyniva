@@ -10,7 +10,6 @@ __all__ = ["META_HOST", "PUB_PLATFORM", "PUB_DETAIL", "PUB_META", "get_thing", "
 import requests as rq
 import json
 import os
-import re
 import logging
 
 # "Internal" endpoint for meta dat
@@ -82,7 +81,7 @@ def update_thing(meta_host, thing):
     update_r = rq.put(meta_host, data=data)
     u_thing = update_r.json()
     if not "t" in u_thing:
-        logging.error("Was not able to update thing %s" % (c_thing, ))
+        logging.error("Was not able to update thing %s" % (thing, ))
         raise ValueError(u_thing)
     return u_thing["t"]
 

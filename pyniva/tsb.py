@@ -5,14 +5,10 @@ Script to connect to NIVA API to query FerryBox data
 """
 __all__ = ["TSB_HOST", "PUB_TSB", "get_signals", "ts_list2df"]
 import os
-from datetime import datetime, timedelta
-import json
 from collections import OrderedDict
 import pandas as pd
-import requests as rq
-import jwt
 
-from .get_data import get_data, token2header
+from .get_data import get_data
 
 
 # "Public" endpoints for data

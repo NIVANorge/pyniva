@@ -6,14 +6,11 @@ Object oriented interface to NIVA Thing universe
 __all__ = ["Thing", "Platform", "Vessel", "Sensor", "TimeSeries",
            "FlagTimeSeries", "GPSTrack"]
 
-from datetime import datetime, timedelta
 from dateutil.parser import parse
 
-import json
-from collections import OrderedDict
 
 from .metaflow import get_thing as meta_get_thing
-from .metaflow import update_thing as meta_update_thing
+# from .metaflow import update_thing as meta_update_thing
 from .metaflow import thing_tree2ts
 from .tsb import get_signals
 

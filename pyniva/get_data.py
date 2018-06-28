@@ -6,7 +6,6 @@ Functions to authenticate against and grab data from NIVA API endpoints
 __all__ = ["get_data", "token2header"]
 
 import json
-from collections import OrderedDict
 import requests as rq
 import jwt
 import io
@@ -56,7 +55,7 @@ def token2header(token_file):
     elif isinstance(token_file, (io.TextIOBase, io.BufferedIOBase, io.RawIOBase)):
         cmrsa = json.load(token_file)
     else:
-        raise ParameterError("token_file must be a file path (str) or an open file handle")
+        raise TypeError("token_file must be a file path (str) or an open file handle")
     
     payload = {
         "iss": cmrsa["client_email"],
