@@ -203,12 +203,15 @@ In addition the API support the following additional parameters:
 
 
 ### Notes and chevats
+* If data is completely missing for a signal the returned DataFrame will not
+  include the corresponding column.
+* If the all data is missing in a query, an empty DataFrame will be returned.
 * *Time aggregation*: You are not guarantied to get the exact time spans asked for
   the server will try to match the requested time windows with 1, 2, 5, 10 or 30
   multiples of seconds, minutes, hours and days. And return the nearest match.
   Raw data is returned if `dt=0` is set. 
 * *Geo fencing*: Since only data from withing a particular geographical region is
-  returned in the query, you must include the uuid of the vessels GPS-track
+  returned in the query, you must include a GPSTrack (i.e. the vessel's GPS-track)
   in order to receive data. Also the time spans in the time aggregation will
   match the actual time stamps in the GPS track signal.
 * For normal time series queries are _filtered on the data quality_ flag,

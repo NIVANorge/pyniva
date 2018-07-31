@@ -14,7 +14,8 @@ import logging
 
 # "Internal" endpoint for meta dat
 META_HOST_ADDR = os.environ.get("METAFLOW_SERVICE_HOST", "localhost")
-META_HOST_PORT = os.environ.get("METAFLOW_SERVICE_PORT", 5557)
+# META_HOST_PORT = os.environ.get("METAFLOW_SERVICE_PORT", 5557)
+META_HOST_PORT = os.environ.get("METAFLOW_SERVICE_PORT", 5556)
 META_HOST = "http://" + META_HOST_ADDR + ":" + str(META_HOST_PORT) + "/"
 
 

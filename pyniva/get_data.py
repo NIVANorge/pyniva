@@ -24,6 +24,7 @@ def get_data(url, params=None, headers=None):
        on the query and end-point (dictionaries for meta data, list of
        dictionaries for time series data)
     """
+    # r = rq.post(url, headers=headers, params=params)
     r = rq.get(url, headers=headers, params=params)
     # print(dir(r.request))
     # print(r.url)
