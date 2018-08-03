@@ -97,12 +97,12 @@ endpoints.
 * TSB\_HOST (internal  endpoint for time series data)
 
 The `tsb` API is intended for interactive use, visualization, data
-"dril in" and merging of asynchronous-heterogenous time series data.
+"drill in" and merging of asynchronous-heterogenous time series data.
 Including merging of data on GPS tracks.
-This means that the typical use of the API is _not_ to downlaod all
+This means that the typical use of the API is _not_ to download all
 avaliable raw data (which can be huge), instead the user will query
-and fetches aggregated data for a given time interval (sefault is
-approximately 1000 data-ponts pr. time series).
+and fetches aggregated data for a given time interval (default is
+approximately 1000 data-points pr. time series).
 The default number of data points can be overridden by setting
 the `n` or `dt` parameter in the query. `dt=0` returns raw data
 (not reccomended for large datasets).
@@ -120,7 +120,7 @@ The `tsb` system holds and handles three kinds of asynchron time series:
 * "normal" time series (`TimeSeries` class),
   which is a time indexes sequence of single numerical
   (floating point) values, i.e. one numerical value for each time stamp,
-  for this datatype there can also be a quality flag for each measuremen.
+  for this datatype there can also be a quality flag for each measurement.
   This flag will typically be -1 for "bad quality",
   0 for quality flag not set, or +1 for "good quality". When querying data
   you can filter on the flag (but the actual flags are not returned).
@@ -129,7 +129,7 @@ The `tsb` system holds and handles three kinds of asynchron time series:
   individual data quality flags. For this datatype the standard aggregation
   type is `mode` which returns the most frequent value in the interval.
 * GPS tracks (`GPSTrack` class), which is a time indexed sequence of
-  longitud and latitude values (WGS84). GPS tracks can be used for geo-fencing
+  longitude and latitude values (WGS84). GPS tracks can be used for geo-fencing
   and they are aggregaetd by keeping actual data at (near) wanted time intervals.
   Note that if a `GPSTrack` is in the query list data will be merged with the track
   and the aggregation intervals will be dictated by the data in the `GPSTrack`
