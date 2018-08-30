@@ -290,3 +290,25 @@ for v in vessel_list:
 
 ```
 
+## Jupyter notebook
+
+   
+Install jupyter notebook with dependencies
+```
+pip install --user jupyter
+
+# dependencies
+pip install --user gmaps
+pip install --user bqplot
+```
+
+Run jupyter notebook:
+
+```
+jupyter notebook pyniva_API_example.ipynb
+```
+
+
+Access the notebook at http://localhost:8888
+   
+See General information above for information about JWT access tokens.
