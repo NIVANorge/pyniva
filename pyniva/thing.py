@@ -27,7 +27,9 @@ class Thing():
     TTYPE = "thing"
 
 
-    def __init__(self, meta_dict):
+    def __init__(self, meta_dict=None, **kwargs):
+        if meta_dict is None:
+            meta_dict = {}
         if "ttype" not in meta_dict:
             meta_dict["ttype"] = self.TTYPE
         self._meta_dict = meta_dict
@@ -98,6 +100,13 @@ class Thing():
                     pass
             return out_dict
         return(_dict_iter(self._meta_dict))
+
+
+    def save(self, meta_host, header=None):
+        """Save/update thing in meta-data service
+        """
+        updated_thing = None
+        return updated_thing 
 
 
 
@@ -203,7 +212,6 @@ class TimeSeries(Thing):
         else:
             return None
 
-
 # end of class TimeSeries
 
 
@@ -220,6 +228,7 @@ class GPSTrack(TimeSeries):
 # Dictionary to call individual init functions
 _dispatcher = {
     "thing": Thing,
+    "component": Component,
     "platform": Platform,
     "vessel": Vessel,
     "sensor": Sensor,

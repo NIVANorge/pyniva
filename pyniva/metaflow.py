@@ -87,6 +87,22 @@ def update_thing(meta_host, thing):
     return u_thing["t"]
 
 
+def delete_thing(meta_host, thing, dry_run=False):
+    """Function to delete a thing document (and alter affected documents)
+    on the meta server.
+
+    Args:
+        meta_host: URL to meta server (i.e. metaflow service)
+        thing:     Dictionary with the Thing document to delete
+
+    Returns:
+        The deleted document, and if present a list of all affected documents
+        (possibly only a list of UUIDs for affected documents?)
+    """
+    # FIXME: Implement this functionality, also in metaflow service
+    pass
+
+
 def thing_tree2ts(top):
     """Walk a tree of parts and yield all time series objects
     (ttype in [tseries, qctseries, gpstrack])
