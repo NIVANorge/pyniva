@@ -5,7 +5,7 @@ Meta data in the metaflow service
 """
 
 __all__ = ["META_HOST", "PUB_PLATFORM", "PUB_DETAIL", "PUB_META", "get_thing", "update_thing",
-           "thing_tree2ts", "path2all_ts"]
+           "delete_thing", "thing_tree2ts", "path2all_ts"]
 
 import requests as rq
 import json
@@ -68,7 +68,7 @@ def path2all_ts(meta_host, path, search_depth=100):
     return [get_thing(meta_host, {"uuid":ts["uuid"]}) for ts in thing_tree2ts(thing)]
 
 
-def update_thing(meta_host, thing):
+def update_thing(meta_host, thing, header=None):
     """Helper function to create or update thing on meta server.
 
     Args:
@@ -79,7 +79,7 @@ def update_thing(meta_host, thing):
         The created or updated thing meta dictionary
     """
     data = json.dumps(thing)
-    update_r = rq.put(meta_host, data=data)
+    update_r = rq.put(meta_host, data=data, headers=header)
     u_thing = update_r.json()
     if not "t" in u_thing:
         logging.error("Was not able to update thing %s" % (thing, ))
@@ -87,7 +87,7 @@ def update_thing(meta_host, thing):
     return u_thing["t"]
 
 
-def delete_thing(meta_host, thing, dry_run=False):
+def delete_thing(meta_host, thing, header=None):
     """Function to delete a thing document (and alter affected documents)
     on the meta server.
 
@@ -100,7 +100,13 @@ def delete_thing(meta_host, thing, dry_run=False):
         (possibly only a list of UUIDs for affected documents?)
     """
     # FIXME: Implement this functionality, also in metaflow service
-    pass
+    data = json.dumps(thing)
+    del_r = rq.delete(meta_host, data=data, headers=header)
+    d_thing = del_r.json()
+    if not "t" in d_thing:
+        logging.error("Error when trying to delete %s" % (thing,))
+        raise ValueError(d_thing)
+    return d_thing["t"]
 
 
 def thing_tree2ts(top):
