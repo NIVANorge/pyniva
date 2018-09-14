@@ -73,7 +73,10 @@ class Thing():
             elif isinstance(thing_data, list) and len(thing_data) > 1:
                 thing_meta = [cls._thing_dispatch(t) for t in thing_data]
         elif isinstance(thing_data, dict) and "ttype" in thing_data:
-            assert(thing_data["ttype"] in _valid_types)
+            try:
+                assert(thing_data["ttype"] in _valid_types)
+            except AssertionError:
+                raise ThingError("%s is not a valid thing type" % thing_data["ttype"])
             for k,v in thing_data.items():
                 if isinstance(v, dict) and "ttype" in v:
                     thing_data[k] = cls._thing_dispatch(v)
@@ -93,11 +96,41 @@ class Thing():
 
 
     @classmethod
-    def get_thing(cls, meta_host, params={}, header=None, **kwargs):
+    def get_thing(cls, meta_host, params=None, header=None, **kwargs):
+        if params is None:
+            c_params = dict()
+        else:
+            c_params = dict()
         for k, v in kwargs.items():
-            params[k] = v
-        thing_meta = meta_get_thing(meta_host, params, header=header)
+            c_params[k] = v
+        thing_meta = meta_get_thing(meta_host, c_params, header=header)
         return(cls._thing_dispatch(thing_meta))
+
+
+    @classmethod
+    def get_or_create_thing(cls, meta_host, params=None, header=None,
+                            path_only=False, **kwargs):
+        if params is None:
+            c_params = dict()
+        else:
+            c_params = params.copy()
+        if path_only:
+            assert("path" in c_params or "path" in kwargs)
+            c_par = {"path": kwargs["path"]} if "path" in kwargs else {"path": params["path"]}
+            c_thing = cls.get_thing(meta_host, header=header, **c_par)
+        else:
+            c_thing = cls.get_thing(meta_host, params=params, header=header, **kwargs)
+        if isinstance(c_thing, list):
+            try:
+                assert(len(c_thing) <= 1)
+            except AssertionError:
+                raise(ThingError("Thing not unique, multiple Things matches search"))
+            if len(c_thing) == 0:
+                # Create new object
+                for k,v in kwargs.items():
+                    c_params[k] = v
+                c_thing = cls._thing_dispatch(c_params)
+        return c_thing # cls.get_thing(meta_host, params=params, header=header, **kwargs)
 
 
     @classmethod
@@ -135,18 +168,18 @@ class Thing():
             out_dict = c_dict.copy()
             for k in out_dict.keys():
                 if isinstance(c_dict[k], Thing):
-                    if not shallow:
+                    if not shallow and not k == "part_of":
                         out_dict[k] = out_dict[k].as_dict(shallow)
                     else:
-                        out_dict[k] = out_dict[k].uuid
+                        out_dict[k] = out_dict[k].uuid if hasattr(out_dict[k], "uuid") else out_dict[k].path
                 elif isinstance(out_dict[k], list):
                     c_list = []
                     for e in out_dict[k]:
                         if isinstance(e, Thing):
-                            if not shallow:
+                            if not shallow and not k == "part_of":
                                 c_list.append(e.as_dict())
                             else:
-                                c_list.append(e.uuid)
+                                c_list.append(e.uuid if hasattr(e, "uuid") else e.path)
                         elif isinstance(e, dict):
                             c_list.append(_dict_iter(e))
                         else:
@@ -188,17 +221,18 @@ class Thing():
         return updated_thing
 
 
-    def delete(self, meta_host, header=None, recursive=False):
+    def delete(self, meta_host, header=None, recursive=True):
         """Delete the object in meta-data service
 
         The server side API will make sure the part_of structure
         will remain/stay consistent after the delete
         """
-        c_parts = self._meta_dict.get("parts", None)
-        if recursive and c_parts is not None:
+        if recursive:
+            c_instance = self.get_tree(meta_host, header=header, levels=1)
+            c_parts = c_instance.parts if hasattr(c_instance, "parts") else []
             for p in c_parts:
                 p.delete(meta_host, header=header, recursive=recursive)
-        if c_parts is not None:
+        if hasattr(self, "parts"):
             del(self._meta_dict["parts"])
 
         deleted_data = meta_delete_thing(meta_host, self.as_dict(shallow=True))
@@ -274,7 +308,6 @@ class TimeSeries(Thing):
             uuid_list = [timeseries.uuid,]
         else:
             uuid_list = [ts.uuid for ts in timeseries]
-        # print(uuid_list)
         df = get_signals(ts_host, uuid_list, **kwargs)
         if name_headers:
             uuid2meta = {ts.uuid:{"name":ts.name, "path":ts.path} 
