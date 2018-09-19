@@ -12,6 +12,8 @@ import json
 import os
 import logging
 
+from .get_data import PyNIVAError
+
 # "Internal" endpoint for meta dat
 META_HOST_ADDR = os.environ.get("METAFLOW_SERVICE_HOST", "localhost")
 # META_HOST_PORT = os.environ.get("METAFLOW_SERVICE_PORT", 5557)
@@ -83,7 +85,12 @@ def update_thing(meta_host, thing, header=None):
     u_thing = update_r.json()
     if not "t" in u_thing:
         logging.error("Was not able to update thing %s" % (thing, ))
-        raise ValueError(u_thing)
+        if "code" in u_thing:
+            _msg = "PUT method not avaliable through endpoint"
+            logging.error(_msg)
+            u_thing["PyNIVAError"] = _msg
+
+        raise PyNIVAError(u_thing)
     return u_thing["t"]
 
 

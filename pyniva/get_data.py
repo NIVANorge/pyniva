@@ -3,12 +3,18 @@
 """
 Functions to authenticate against and grab data from NIVA API endpoints
 """
-__all__ = ["get_data", "token2header"]
+__all__ = ["get_data", "token2header", "PyNIVAError"]
 
 import json
 import requests as rq
 import jwt
 import io
+
+
+class PyNIVAError(Exception):
+    """Exception wrapper for Thing universe
+    """
+    pass
 
 
 def get_data(url, params=None, headers=None):

@@ -4,7 +4,7 @@
 Object oriented interface to NIVA Thing universe
 """
 __all__ = ["Thing", "Platform", "Vessel", "Sensor", "TimeSeries",
-           "FlagTimeSeries", "GPSTrack"]
+           "FlagTimeSeries", "GPSTrack", "ThingError"]
 
 from dateutil.parser import parse
 
@@ -13,10 +13,11 @@ from .metaflow import get_thing as meta_get_thing
 from .metaflow import update_thing as meta_update_thing
 from .metaflow import delete_thing as meta_delete_thing
 from .metaflow import thing_tree2ts
+from .get_data import PyNIVAError
 from .tsb import get_signals
 
 
-class ThingError(Exception):
+class ThingError(PyNIVAError):
     """Exception wrapper for Thing universe
     """
     pass
