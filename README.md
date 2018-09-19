@@ -45,9 +45,26 @@ All the endpoints return data in JSON format.
 allows for searching meta data, and retrieving all stored meta data
 for data objects ("Things").
 
-The "Thing universe" is a simple hierarchy of classes. Currently
-the following classes are implemented and supported by the `metaflow`
-back-end:
+The `metaflow` service stores all meta-data as JSON documents with
+a set of specific reserved fields, including `ttype` which is
+used to identify the object type of the meta data. These
+object types is mapped directly to the Thing objects exposed
+in the `pyniva` API wrapper.
+
+In `metaflow` and in the `pyniva` API-wrapper all data objects are
+represented as `Thing` class instances or a subclass of `Thing`.
+Using the `pyniva` wrapper search and detailed meta data is also
+available through `Thing` classes (see examples bellow).
+
+
+The "Thing universe" is a simple hierarchy of classes,
+with the generic "Thing" as base class. In `pyniva` all objects
+and data are represented as "Thing" instances. Access to meta-data
+and data is provided through class and instance methods of "Things"
+(including query and retrieval of time-series).
+
+Currently the following classes are implemented and supported by
+the `metaflow` back-end:
 ```
 Thing (ttype = 'thing')
   |
@@ -70,12 +87,8 @@ an instance (i.e. the `ttype` attribute of the underlying
 JSON document), and it is straightforward to extend the data model
 with new types and functionality.
 
-In `metaflow` and in the `pyniva` API-wrapper all data objects are
-represented as `Thing` class instances or a subclass of `Thing`.
-Using the `pyniva` wrapper search and detailed meta data is also
-available through `Thing` classes (see examples bellow).
 
-`pyniva` exposes/includes URLs to public and internal `metaflow`
+`pyniva` also exposes/includes URLs to public and internal `metaflow`
 endpoints.
 * PUB\_META (public endpoints to get meta data)
 * META\_HOST (internal endpoint for all meta data, edit to fit your installation)
@@ -110,6 +123,11 @@ All `Thing` or subclass of `Thing` instances
 persisted by `metaflow` will at least have an `uuid` and a
 `ttype` attribute.
 
+
+### Updating and persisting Things
+
+
+### Deleting Things
 
 
 ## tsb - time series data
