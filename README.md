@@ -93,6 +93,18 @@ endpoints.
 * PUB\_META (public endpoints to get meta data)
 * META\_HOST (internal endpoint for all meta data, edit to fit your installation)
 
+WORKING HERE
+### Getting Things from 'metaflow'
+Class methods:
+* `Thing.get_thing(meta_endpoint, params, **kwargs)`
+* `Thing.list(meta_endpoint, params, **kwargs)`
+* `Thing.get_or_create_thing(meta_endpoint, params, **kwargs)`
+
+
+### Getting meta data and domain models
+
+
+### Examples
 ```python
 # Get list of available vessels in metaflow, print their names
 # and the number of avaliable time series for each vessel
