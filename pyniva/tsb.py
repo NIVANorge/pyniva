@@ -1,12 +1,13 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 """
-Script to connect to NIVA API to query FerryBox data
+Functions to connect to and get data from tsb back-end 
 """
 __all__ = ["TSB_HOST", "PUB_TSB", "get_signals", "ts_list2df"]
 import os
 from collections import OrderedDict
 import pandas as pd
+from dateutil.parser import parse
 
 from .get_data import get_data
 
@@ -64,9 +65,9 @@ def ts_list2df(ts_dict_list):
 
 # Helper to get data frames with time series data
 def get_signals(signals_url, uuids, **kwargs):
- # start_time, end_time,
- #                time_window="PT1H", agg_type="avg", uuid_lookup=None,
- #                headers=None):
+    # start_time, end_time,
+    #                time_window="PT1H", agg_type="avg", uuid_lookup=None,
+    #                headers=None):
     """Get signals (time series data) from NIVA REST endpoints
 
     Params:
@@ -100,9 +101,13 @@ def get_signals(signals_url, uuids, **kwargs):
     query_url = signals_url
     params = {}
     if "start_time" in kwargs:
+        if isinstance(kwargs["start_time"], str):
+            kwargs["start_time"] = parse(kwargs["start_time"])
         params["start"] = kwargs["start_time"].isoformat()
         del kwargs["start_time"]
     if "end_time" in kwargs:
+        if isinstance(kwargs["end_time"], str):
+            kwargs["end_time"] = parse(kwargs["end_time"])
         params["end"] =  kwargs["end_time"].isoformat()
         del kwargs["end_time"]
     for k, v in kwargs.items():

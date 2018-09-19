@@ -45,6 +45,31 @@ All the endpoints return data in JSON format.
 allows for searching meta data, and retrieving all stored meta data
 for data objects ("Things").
 
+The "Thing universe" is a simple hierarchy of classes. Currently
+the following classes are implemented and supported by the `metaflow`
+back-end:
+```
+Thing (ttype = 'thing')
+  |
+  |-> Platform (ttype = 'platform')
+  |   |
+  |   |-> Vessel (ttype = 'vessel')
+  |
+  |-> Component (ttype = 'component')
+  |  |
+  |  |-> Sensor (ttype = 'sensor')
+  |
+  |-> TimeSeriers (ttype = 'tseries')
+     |
+     |-> FlagTimeSeries (ttype = 'qctseries')
+     |
+     |-> GPSTrack (ttype = 'gpstrack')
+```
+The type of an object is defined by the `ttype` attribute of
+an instance (i.e. the `ttype` attribute of the underlying
+JSON document), and it is straightforward to extend the data model
+with new types and functionality.
+
 In `metaflow` and in the `pyniva` API-wrapper all data objects are
 represented as `Thing` class instances or a subclass of `Thing`.
 Using the `pyniva` wrapper search and detailed meta data is also
@@ -58,13 +83,13 @@ endpoints.
 ```python
 # Get list of available vessels in metaflow, print their names
 # and the number of avaliable time series for each vessel
-from pyniva import Vessel, PUB_DETAIL, PUB_PLATFORM, token2header
+from pyniva import Vessel, PUB_META, PUB_TSB, token2header
 
 header = token2header("path/to/my/tokenfile.json")
 
-vessel_list = Vessel.list(PUB_PLATFORM, header=header)
+vessel_list = Vessel.list(PUB_META, header=header)
 for v in vessel_list:
-    time_series = v.get_all_tseries(PUB_DETAIL, header=header)
+    time_series = v.get_all_tseries(PUB_META, header=header)
     print(v.name, len(time_series))
 ```
 
@@ -72,7 +97,7 @@ To get all available meta data for a `Thing` (or subclass) instance
 you can call the `to_dict()` method which will return all meta data
 as a Python dictionary.
 ```python
-print(v.to_dict())
+print(v.as_dict())
 ```
 
 Objects in the `Thing` hierarchy will have different attributes,

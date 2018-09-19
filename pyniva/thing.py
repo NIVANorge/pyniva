@@ -100,7 +100,7 @@ class Thing():
         if params is None:
             c_params = dict()
         else:
-            c_params = dict()
+            c_params = params.copy()
         for k, v in kwargs.items():
             c_params[k] = v
         thing_meta = meta_get_thing(meta_host, c_params, header=header)
