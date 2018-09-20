@@ -109,8 +109,8 @@ class Thing():
 
 
     @classmethod
-    def get_or_create_thing(cls, meta_host, params=None, header=None,
-                            path_only=False, **kwargs):
+    def get_or_create(cls, meta_host, params=None, header=None,
+                      path_only=False, **kwargs):
         if params is None:
             c_params = dict()
         else:
@@ -130,8 +130,10 @@ class Thing():
                 # Create new object
                 for k,v in kwargs.items():
                     c_params[k] = v
+                if "ttype" not in c_params:
+                    c_params["ttype"] = cls.TTYPE
                 c_thing = cls._thing_dispatch(c_params)
-        return c_thing # cls.get_thing(meta_host, params=params, header=header, **kwargs)
+        return c_thing
 
 
     @classmethod
@@ -148,14 +150,6 @@ class Thing():
         if parts and "parts" in tdict:
             tdict["parts"] = [cls.tdict2thing(part) for part in tdict["parts"]]
         return _dispatcher[tdict["ttype"]](tdict)
-
-
-    # @property
-    # def parts(self):
-    #     if "parts" in self._meta_dict:
-    #         return self._meta_dict["parts"]
-    #     else:
-    #         return []
 
 
     def as_dict(self, shallow=False):
@@ -216,7 +210,7 @@ class Thing():
             assert(isinstance(c_parts, list))
             for p in c_parts:
                 p.part_of = updated_thing.uuid
-                p = p.save(meta_host)
+                p = p.save(meta_host, header=header)
             updated_thing.parts = c_parts
 
         return updated_thing

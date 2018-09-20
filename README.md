@@ -87,21 +87,71 @@ an instance (i.e. the `ttype` attribute of the underlying
 JSON document), and it is straightforward to extend the data model
 with new types and functionality.
 
+All public methods in `pyniva` has informative docstrings.
 
 `pyniva` also exposes/includes URLs to public and internal `metaflow`
 endpoints.
 * PUB\_META (public endpoints to get meta data)
 * META\_HOST (internal endpoint for all meta data, edit to fit your installation)
 
-WORKING HERE
+### Creating new Things
+New Thing instances are created using the standard Python constructor,
+and it takes named parameters and/or a dictionary with object attributes.
+
+Example:
+```python
+new_timeseries = TimeSeries(name="testseries", path="test/testseries", unit="V")
+new_timeseries2 = TimeSeries({"name": "testseries", "path": "test/testseries",
+                              "unit": "V"})
+```
+these two are equivalent.
+
+Note that new objects are _not persisted_ in `metaflow`, and you'll have to
+explicitly save them using the `thing.save()` instance method.
+```python
+saved_thing = thing.save(meta_host, header=header)
+```
+Note that `save()` method is recursive, so saving an object with children present in
+the `parts` attribute will also save the children, children's children, etc. 
+
 ### Getting Things from 'metaflow'
-Class methods:
-* `Thing.get_thing(meta_endpoint, params, **kwargs)`
-* `Thing.list(meta_endpoint, params, **kwargs)`
-* `Thing.get_or_create_thing(meta_endpoint, params, **kwargs)`
+The following class methods will search and/or fetch meta-data
+from the `metaflow` and return the data as a Thing instance or
+a list of Thing instances.
+* `Thing.get_thing(meta_endpoint, header=header, params=params, **kwargs)`
+* `Thing.list(meta_endpoint, header=header, params=params, **kwargs)`
+* `Thing.get_or_create(meta_endpoint, header=header, params=params, **kwargs)`
+
+Arguments can be passed as a parameter dictionary and/or as keyword arguments.
+```python
+new_vessel = Vessel.get_or_create(meta_host, header=header, params={"name": "MS New"})
+```
+is equivalent to
+```python
+new_vessel = Vessel.get_or_create(meta_host, header=header, name="MS New")
+```
+
+### Getting meta data and domain model
+To get the full domain model of a Thing instance use the `thing.get_tree()` instance
+method:
+```python
+thing_tree = thing.get_tree(meta_host, header=header)
+```
+Note that the `thing` instance have to be present in `metaflow`.
 
 
-### Getting meta data and domain models
+### Deleting meta-data
+To delete a Thing instance in `metaflow` use the `thing.delete()` instance method.
+```python
+thing.delete(meta_host, header=header)
+```
+Note that deleting an object in `metaflow` has the side effect removing the 'part_of' attribute
+for any child object in the database (this keeps the DB consistent).
+
+The `delete()` method can also delete a full object tree if the parameter `recursive=True` is set:
+```python
+thing_tree.delete(meta_host, header=header, recursive=True)
+```
 
 
 ### Examples
@@ -112,10 +162,15 @@ from pyniva import Vessel, PUB_META, PUB_TSB, token2header
 
 header = token2header("path/to/my/tokenfile.json")
 
+# Get list of all available vessels
 vessel_list = Vessel.list(PUB_META, header=header)
 for v in vessel_list:
     time_series = v.get_all_tseries(PUB_META, header=header)
     print(v.name, len(time_series))
+
+# Get the full domain model for the first vessel in the list
+vessel = vessel_list[0]
+vessel_full = vessel.get_tree(PUB_META, header=header)
 ```
 
 To get all available meta data for a `Thing` (or subclass) instance
@@ -136,10 +191,11 @@ persisted by `metaflow` will at least have an `uuid` and a
 `ttype` attribute.
 
 
-### Updating and persisting Things
-
-
-### Deleting Things
+### Notes and chevats
+* Saves, updates and deletes can render your Python model inconsistent,
+  since the methods don't change objects in place but return an updated
+  object.
+  
 
 
 ## tsb - time series data
@@ -271,7 +327,7 @@ In addition the API support the following additional parameters:
   match the actual time stamps in the GPS track signal.
 * For normal time series queries are _filtered on the data quality_ flag,
   meaning that only data points which has passed QC is included in the
-  returned result. This behavioyur can be overriden using the `noqc` query flag.
+  returned result. This behavior can be overridden using the `noqc` query flag.
 * If a GPS-track is included in the query _data is merged with the track_,
    and the GPS-track data is returned as `longitude` and `latitude`.
      1. Only one GPS-track can be submitted at the time
