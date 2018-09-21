@@ -35,6 +35,7 @@ def get_thing(meta_host, par, header=None):
     Args:
         meta_host: URL to meta server (i.e. metaflow service)
         par:       Dictionary with query parameters
+        header:    HTTP request header (for JWT authentication and encryption)
 
     Returns:
         A list of Thing dictionaries or a single dictionary if only one
