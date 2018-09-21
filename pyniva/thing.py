@@ -245,6 +245,29 @@ class Thing():
         return(_dict_iter(self._meta_dict))
 
 
+    def update(self, data=None, **kwargs):
+        """Update Thing instance in place
+
+        Args:
+            data: dictionary with new instance data
+            **kwargs:  Named parameters    
+
+        Returns:
+            self
+        """
+        if data is None:
+            meta_dict = {}
+        else:
+            meta_dict = data.copy()
+        for k, v in kwargs.items():
+            meta_dict[k] = v
+
+        for k, v in meta_dict.items():
+            self._meta_dict[k] = v
+
+        return self
+
+
     def save(self, meta_host, header=None):
         """Save/update Thing in 'metaflow' meta-data service
 
@@ -260,8 +283,6 @@ class Thing():
             The persisted instance. Note that the returned instance will
             be different from the caller instance.
         """
-
-
         c_parts = self._meta_dict.get("parts", None)
         if c_parts is not None:
             del(self._meta_dict["parts"])
