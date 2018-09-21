@@ -107,7 +107,6 @@ def delete_thing(meta_host, thing, header=None):
         The deleted document, and if present a list of all affected documents
         (possibly only a list of UUIDs for affected documents?)
     """
-    # FIXME: Implement this functionality, also in metaflow service
     data = json.dumps(thing)
     del_r = rq.delete(meta_host, data=data, headers=header)
     d_thing = del_r.json()
