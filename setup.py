@@ -3,14 +3,7 @@
 """
 
 from setuptools import setup, find_packages
-from codecs import open
-from os import path
 
-here = path.abspath(path.dirname(__file__))
-
-# Get the long description from the README.md file
-with open(path.join(here, 'README.md'), encoding='utf-8') as f:
-    long_description = f.read()
 
 setup(
     name='pyniva',
@@ -20,8 +13,7 @@ setup(
     # https://packaging.python.org/en/latest/single_source_version.html
     version='0.1',
 
-    description="Python wrapper/API for interacting with NIVA's data platfrom",
-    long_description=long_description,
+    description="Python wrapper/API for interacting with NIVA's data platform",
 
     # The project's main homepage.
     url='https://github.com/NIVANorge/pyniva',
