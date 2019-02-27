@@ -11,7 +11,7 @@ setup(
     # Versions should comply with PEP440.  For a discussion on single-sourcing
     # the version across setup.py and the project code, see
     # https://packaging.python.org/en/latest/single_source_version.html
-    version='0.2.0',
+    version='0.2.1',
 
     description="Python wrapper/API for interacting with NIVA's data platform",
 
@@ -49,6 +49,6 @@ setup(
 
     keywords='metadata timeseries data',
     packages=find_packages(exclude=['contrib', 'docs', 'tests']),
-    install_requires=['pandas', 'numpy', 'requests', 'pyjwt', 'cryptography'],
+    install_requires=['pandas==0.24.1', 'numpy==1.16.1', 'requests==2.21.0', 'pyjwt==1.7.1', 'cryptography==2.5'],
     test_suite='tests',
 )
