@@ -82,10 +82,10 @@ def update_thing(meta_host, thing, header=None):
         The created or updated thing meta dictionary
     """
     data = json.dumps(thing)
-    logging.info(f"printing data from metaflow pyniva \n{json.dumps(thing, indent=2)}")
+    # logging.info(f"printing data from metaflow pyniva \n{json.dumps(thing, indent=2)}")
     update_r = rq.put(meta_host, data=data, headers=header)
     update_r.raise_for_status()
-    logging.info(f"update_r {update_r}, \n{update_r.text}")
+    # logging.info(f"update_r {update_r}, \n{update_r.text}")
     u_thing = update_r.json()
     if not "t" in u_thing:
         logging.error("Was not able to update thing %s" % (thing, ))
