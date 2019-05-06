@@ -368,7 +368,7 @@ class Platform(Thing):
         def _part_uuid2thing(thing, tlookup):
             if isinstance(thing, dict):
                 return tlookup[thing["uuid"]]
-            if hasattr(thing, "parts"):
+            if hasattr(thing, "parts") and thing._meta_dict["parts"] is not None:
                 thing._meta_dict["parts"] = [_part_uuid2thing(part, tlookup) for part in thing.parts]
             return tlookup[thing.uuid]
 
