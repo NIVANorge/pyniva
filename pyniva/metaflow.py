@@ -83,6 +83,7 @@ def update_thing(meta_host, thing, header=None):
     """
     data = json.dumps(thing)
     update_r = rq.put(meta_host, data=data, headers=header)
+    update_r.raise_for_status()
     u_thing = update_r.json()
     if not "t" in u_thing:
         logging.error("Was not able to update thing %s" % (thing, ))
