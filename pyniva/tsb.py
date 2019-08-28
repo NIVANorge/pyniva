@@ -64,7 +64,7 @@ def ts_list2df(ts_dict_list):
 
 
 # Helper to get data frames with time series data
-def get_signals(signals_url, uuids, **kwargs):
+def get_signals(signals_url, uuids, session=None, **kwargs):
     # start_time, end_time,
     #                time_window="PT1H", agg_type="avg", uuid_lookup=None,
     #                headers=None):
@@ -114,7 +114,7 @@ def get_signals(signals_url, uuids, **kwargs):
         params[k] = v
     params["uuid"] = ",".join(uuids)
 
-    data = get_data(query_url, params=params, headers=header)
+    data = get_data(query_url, params=params, headers=header, session=session)
 
     if len(data) == 0:
         df = pd.DataFrame()

@@ -97,7 +97,7 @@ class Thing():
 
 
     @classmethod
-    def get_thing(cls, meta_host, params=None, header=None, **kwargs):
+    def get_thing(cls, meta_host, params=None, header=None, session=None, **kwargs):
         """Get a Thing instance (or subclass) or a list of instances
         according to the supplied parameters.
         The data is fetched from the 'metaflow' back-end.
@@ -105,26 +105,27 @@ class Thing():
         Args:
             meta_host: URL to meta server (i.e. 'metaflow' service)
             params:    Dictionary with query parameters
-            header:    HTTP request header (for JWT authentication and encryption) 
+            header:    HTTP request header (for JWT authentication and encryption)
+            session:   Requests session object 
             **kwargs:  Named parameters
 
         Returns:
             A Thing (or subclass) instance or a list of instances fetched
             from 'metaflow' back-end.
-        """   
+        """
         if params is None:
             c_params = dict()
         else:
             c_params = params.copy()
         for k, v in kwargs.items():
             c_params[k] = v
-        thing_meta = meta_get_thing(meta_host, c_params, header=header)
-        return(cls._thing_dispatch(thing_meta))
+        thing_meta = meta_get_thing(meta_host, c_params, header=header, session=session)
+        return cls._thing_dispatch(thing_meta)
 
 
     @classmethod
     def get_or_create(cls, meta_host, params=None, header=None,
-                      path_only=False, **kwargs):
+                      path_only=False, session=None, **kwargs):
         """Get a single Thing instance (or subclass) from
         the 'metaflow' back-end or if it doesn't exist
         create a new instance.
@@ -133,7 +134,8 @@ class Thing():
             meta_host: URL to meta server (i.e. 'metaflow' service)
             params:    Dictionary with query parameters
             header:    HTTP request header (for JWT authentication and encryption)
-            path_only: If True only the path will be used in the 'metaflow' query 
+            path_only: If True only the path will be used in the 'metaflow' query
+            session:   Requests session object 
             **kwargs:  Named parameters    
 
         Returns:
@@ -147,9 +149,9 @@ class Thing():
         if path_only:
             assert("path" in c_params or "path" in kwargs)
             c_par = {"path": kwargs["path"]} if "path" in kwargs else {"path": params["path"]}
-            c_thing = cls.get_thing(meta_host, header=header, **c_par)
+            c_thing = cls.get_thing(meta_host, header=header, session=session, **c_par)
         else:
-            c_thing = cls.get_thing(meta_host, params=params, header=header, **kwargs)
+            c_thing = cls.get_thing(meta_host, params=params, header=header, session=session, **kwargs)
         if isinstance(c_thing, list):
             try:
                 assert(len(c_thing) <= 1)
@@ -166,13 +168,14 @@ class Thing():
 
 
     @classmethod
-    def list(cls, meta_host, header=None, **kwargs):
+    def list(cls, meta_host, header=None, session=None, **kwargs):
         """Get a list of Thing instances of the type matching the
         caller class and search criteria in 'metaflow'.
 
         Args:
             meta_host: URL to meta server (i.e. 'metaflow' service)
             header:    HTTP request header (for JWT authentication and encryption)
+            session:   Requests session object
             **kwargs:  Named parameters    
 
         Returns:
@@ -186,7 +189,7 @@ class Thing():
         params = {"ttype": cls.TTYPE}
         for k, v in kwargs.items():
             params[k] = v
-        t_list = cls.get_thing(meta_host, params=params, header=header)
+        t_list = cls.get_thing(meta_host, params=params, header=header, session=session)
         return t_list if isinstance(t_list, list) else [t_list,]
 
 
@@ -268,7 +271,7 @@ class Thing():
         return self
 
 
-    def save(self, meta_host, header=None):
+    def save(self, meta_host, header=None, session=None):
         """Save/update Thing in 'metaflow' meta-data service
 
         Note that the method will also recursively update/save
@@ -278,6 +281,7 @@ class Thing():
         Args:
             meta_host: URL of 'metaflow' service
             header: HTTP request header (for JWT authentication and encryption)
+            session: Requests session object
 
         Returns:
             The persisted instance. Note that the returned instance will
@@ -288,7 +292,7 @@ class Thing():
             del(self._meta_dict["parts"])
 
         updated_data = meta_update_thing(meta_host, self.as_dict(shallow=True),
-                                         header=header)
+                                         header=header, session=session)
         updated_thing = self._thing_dispatch(updated_data)
 
         if c_parts is not None:
@@ -296,13 +300,13 @@ class Thing():
             assert(isinstance(c_parts, list))
             for p in c_parts:
                 p.part_of = updated_thing.uuid
-                p = p.save(meta_host, header=header)
+                p = p.save(meta_host, header=header, session=session)
             updated_thing.parts = c_parts
 
         return updated_thing
 
 
-    def delete(self, meta_host, header=None, recursive=True):
+    def delete(self, meta_host, header=None, recursive=True, session=None):
         """Delete the object in meta-data service
 
         The server side API will make sure the part_of structure
@@ -311,35 +315,37 @@ class Thing():
             meta_host: URL of 'metaflow' service
             header: HTTP request header (for JWT authentication and encryption)
             recursive: Also delete child objects
+            session: Requests session object
 
         Returns:
             The deleted instance (self).
         """
         if recursive:
-            c_instance = self.get_tree(meta_host, header=header, levels=1)
+            c_instance = self.get_tree(meta_host, header=header, levels=1, session=session)
             c_parts = c_instance.parts if hasattr(c_instance, "parts") else []
             for p in c_parts:
-                p.delete(meta_host, header=header, recursive=recursive)
+                p.delete(meta_host, header=header, recursive=recursive, session=session)
         if hasattr(self, "parts"):
             del(self._meta_dict["parts"])
 
-        deleted_data = meta_delete_thing(meta_host, self.as_dict(shallow=True))
+        deleted_data = meta_delete_thing(meta_host, self.as_dict(shallow=True), session=session)
         deleted_thing = self._thing_dispatch(deleted_data)
         return deleted_thing
 
 
-    def get_tree(self, meta_host, header=None, levels=100):
+    def get_tree(self, meta_host, header=None, levels=100, session=None):
         """Get data model tree for Thing instance
 
         Args:
             meta_host: URL of 'metaflow' service
             header: HTTP request header (for JWT authentication and encryption)
             levels: Maximum tree depth returned
+            session: Requests session object
 
         Returns:
             Thing instance with childrens (in 'parts' attribute) attached
         """
-        return self.get_thing(meta_host, header=header, uuid=self.uuid, parts=levels)
+        return self.get_thing(meta_host, header=header, uuid=self.uuid, parts=levels, session=session)
 
 
 class Component(Thing):
@@ -354,13 +360,14 @@ class Platform(Thing):
     """
     TTYPE = "platform"
 
-    def get_all_tseries(self, meta_host, header=None):
+    def get_all_tseries(self, meta_host, header=None, session=None):
         """Method returning all available time series instances
         attached to the Platform.
 
         Args:
             meta_host: URL of 'metaflow' service
             header: HTTP request header (for JWT authentication and encryption)
+            session: Requests session object
 
         Returns:
             A list of TimeSeries instances attached to the Platform 
@@ -372,7 +379,7 @@ class Platform(Thing):
                 thing._meta_dict["parts"] = [_part_uuid2thing(part, tlookup) for part in thing.parts]
             return tlookup[thing.uuid]
 
-        full_thing = self.get_tree(meta_host, header=header)
+        full_thing = self.get_tree(meta_host, header=header, session=session)
         thing_tree = full_thing.as_dict()
 
         ts_list = [Thing.tdict2thing(ts) for ts in thing_tree2ts(thing_tree)]
@@ -401,7 +408,7 @@ class TimeSeries(Thing):
 
     @classmethod
     def get_timeseries_list(cls, ts_host, timeseries,
-                            name_headers=False, **kwargs):
+                            name_headers=False, session=None, **kwargs):
         """Metod for querying a time series from the tsb backend
         For further details about query parameters etc. see
         'pyniva' documentation.
@@ -409,6 +416,7 @@ class TimeSeries(Thing):
         Params:
            ts_host (str): URL for time series backend (tsb)
            timeseries:    a single TimeSeries instance or a list of TimeSeries instances
+           session:       Requests session object
            **kwargs:      Keyword arguments for the query, see 'pyniva' documentation for
                           further details.
         Returns:
@@ -418,7 +426,7 @@ class TimeSeries(Thing):
             uuid_list = [timeseries.uuid,]
         else:
             uuid_list = [ts.uuid for ts in timeseries]
-        df = get_signals(ts_host, uuid_list, **kwargs)
+        df = get_signals(ts_host, uuid_list, session=session, **kwargs)
         if name_headers:
             uuid2meta = {ts.uuid:{"name":ts.name, "path":ts.path} 
                          for ts in timeseries if hasattr(ts, "name")}
@@ -427,25 +435,26 @@ class TimeSeries(Thing):
         return df
 
 
-    def get_tseries(self, ts_host, **kwargs):
+    def get_tseries(self, ts_host, session=None, **kwargs):
         """Metod for querying a time series from the tsb backend
         For further details about query parameters etc. see
         'pyniva' documentation.
 
         Params:
            ts_host (str): URL for time series backend (tsb)
+           session:       Requests session object
            **kwargs:      Keyword arguments for the query, see 'pyniva' documentation for
                           further details.
         Returns:
             A Pandas DataFrame with the timeseries
         """
-        return self.get_timeseries_list(ts_host, [self,], name_headers=True,
+        return self.get_timeseries_list(ts_host, [self,], name_headers=True, session=session,
                                         **kwargs)
 
-    def get_ts(self, ts_host, **kwargs):
+    def get_ts(self, ts_host, session=None, **kwargs):
         """Same as get_tseries() method
         """
-        return self.get_tseries(ts_host, **kwargs)
+        return self.get_tseries(ts_host, session=session, **kwargs)
 
 
     @property
