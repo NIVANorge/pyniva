@@ -288,12 +288,12 @@ Also note that the API has the following default behavior:
 
 #### Optional parameters
 In addition the API support the following additional parameters:
-* *n* (integer): approximate number of data-points to return from the query. If neither *dt* nor
-*n* is set a default value of n = 1000 will be used.
-* *dt*, time span in aggregation, corresponding to number of seconds. 
-Also note that the API don't guarantee that the returned time spans will match the requested string, it will just try to
-match it as close as possible with a valid Timescale [time aggregation string](http://docs.timescale.com/latest/api#select).
-If dt is set to zero, raw data are requested. 
+* *n* (integer): approximate number of data-points to return from the query
+* *dt*, time interval in aggregation. Must be either number of seconds or 
+ isodate duration [ISO8601](https://en.wikipedia.org/wiki/ISO_8601#Durations)
+ (note: "P1M" would refer to 1 month interval while "PT1M" would refer to 1 minute interval).
+  Also note that the API don't guarantee that the returned time spans will match the requested string, it will just try to
+  match it as close as possible with a valid Timescale [time aggregation string](http://docs.timescale.com/latest/api#select).
 * *agg_type*, aggregation type, possible values:
   "avg" (default), "min", "max", "sum", "count", "stddev", "mode", "median" and "percentile"
 * *percentile* if agg\_type is percentile the API also requires this parameter to be
