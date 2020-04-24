@@ -4,7 +4,8 @@
 Functions to authenticate against and grab data from NIVA API endpoints
 """
 __all__ = ["get_data", "token2header", "PyNIVAError"]
-
+import logging
+from datetime import timedelta
 import json
 import requests
 import jwt
@@ -15,6 +16,17 @@ class PyNIVAError(Exception):
     """Exception wrapper for Thing universe
     """
     pass
+
+
+def validate_query_parameters(**params):
+
+    if "dt" in params.keys():
+        if type(params["dt"]) not in [int, float]:
+            raise PyNIVAError(f"dt must be a number corresponding to aggregation interval in seconds")
+
+    if "dt" not in params.keys() and "n" not in params.keys():
+        logging.warning("Your data will be aggregated to yield 1000 points."
+                        " To change this behavior you should set either n or dt parameters.")
 
 
 def get_data(url, params=None, headers=None, session=None):
@@ -31,8 +43,8 @@ def get_data(url, params=None, headers=None, session=None):
        on the query and end-point (dictionaries for meta data, list of
        dictionaries for time series data)
     """
+    validate_query_parameters(**params)
     rq = session or requests
-
     r = rq.get(url, headers=headers, params=params)
     r.raise_for_status()
     full_data = r.json()
