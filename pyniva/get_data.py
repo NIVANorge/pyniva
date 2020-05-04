@@ -21,14 +21,6 @@ class PyNIVAError(Exception):
 
 def validate_query_parameters(**params):
 
-    if "dt" in params.keys():
-        if type(params["dt"]) not in [int, float]:
-            try:
-                dt = parse_duration(params["dt"])
-            except:
-                raise PyNIVAError(f"dt= {params['dt']} is not a valid aggregation interval."
-                                  " dt must be a number (in seconds) or an isodate duration.")
-
     if "dt" not in params.keys() and "n" not in params.keys():
         logging.warning("Your data will be aggregated to yield 1000 points."
                         " To change this behavior you should set either n or dt parameters.")
