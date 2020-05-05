@@ -39,9 +39,8 @@ def ts_list2df(ts_dict_list):
     Returns:
         Time indexed pandas dictionary with data in list
     """ 
-    # print(ts_dict_list)
     assert(len(ts_dict_list) > 0)
-    if 'error' in ts_dict_list.keys():
+    if type(ts_dict_list) is dict and 'error' in ts_dict_list.keys():
         raise TsbError(ts_dict_list['error'])
     else:
         keys_set = set([k for rd in ts_dict_list for k in rd.keys()])
