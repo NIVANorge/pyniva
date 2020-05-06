@@ -40,10 +40,7 @@ def ts_list2df(ts_dict_list):
         Time indexed pandas dictionary with data in list
     """ 
     assert(len(ts_dict_list) > 0)
-    if type(ts_dict_list) is dict and 'error' in ts_dict_list.keys():
-        raise TsbError(ts_dict_list['error'])
-    else:
-        keys_set = set([k for rd in ts_dict_list for k in rd.keys()])
+    keys_set = set([k for rd in ts_dict_list for k in rd.keys()])
     assert("time" in keys_set)
     data_dict = OrderedDict([("time", []),])
     if "longitude" in keys_set and "latitude" in keys_set:

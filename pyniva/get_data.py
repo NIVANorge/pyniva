@@ -43,7 +43,11 @@ def get_data(url, params=None, headers=None, session=None):
     validate_query_parameters(**params)
     rq = session or requests
     r = rq.get(url, headers=headers, params=params)
-    r.raise_for_status()
+    try:
+        r.raise_for_status()
+    except requests.exceptions.HTTPError:
+        raise PyNIVAError(r.json()['error'])
+
     full_data = r.json()
 
     # If no error occurred the data is found in the "t" attribute of
