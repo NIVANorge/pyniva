@@ -11,7 +11,7 @@ setup(
     # Versions should comply with PEP440.  For a discussion on single-sourcing
     # the version across setup.py and the project code, see
     # https://packaging.python.org/en/latest/single_source_version.html
-    version='0.3.1',
+    version='0.3.2',
 
     description="Python wrapper/API for interacting with NIVA's data platform",
 
@@ -35,9 +35,6 @@ setup(
 
         # Indicate who your project is intended for
         'Intended Audience :: Developers',
-
-        # Pick your license as you wish (should match "license" above)
-        'License :: MIT license',
 
         'Programming Language :: Python :: 3',
         'Programming Language :: Python :: 3.5',
