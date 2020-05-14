@@ -7,6 +7,8 @@ Meta data in the metaflow service
 __all__ = ["META_HOST", "PUB_PLATFORM", "PUB_DETAIL", "PUB_META", "get_thing", "update_thing",
            "delete_thing", "thing_tree2ts", "path2all_ts"]
 
+import uuid
+
 import requests
 import json
 import os
@@ -44,6 +46,8 @@ def get_thing(meta_host, par, header=None, session=None):
     """
     rq = session or requests
 
+    trace_id = str(uuid.uuid4())
+    header['Trace-Id'] = trace_id
     if meta_host.startswith(PUB_DETAIL) and "uuid" in par:
         meta_host = meta_host + par["uuid"]
         del par["uuid"]
@@ -52,7 +56,8 @@ def get_thing(meta_host, par, header=None, session=None):
     r.raise_for_status()
     t = r.json()
 
-    assert("t" in t)
+    if "t" not in t:
+        raise PyNIVAError(message=f"Could not find metadata for requested parameters {par}", req_args=par, trace_id=trace_id)
     if isinstance(t["t"], list) and len(t["t"]) == 1:
         return t["t"][0]
 

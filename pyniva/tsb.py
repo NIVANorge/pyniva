@@ -11,7 +11,6 @@ from dateutil.parser import parse
 
 from .get_data import get_data
 
-
 # "Public" endpoints for data
 # PUB_SIGNAL = "https://ferrybox-api.niva.no/v1/signal/"
 PUB_TSB = "https://ferrybox-api.niva.no/v1/tsb/"
@@ -21,8 +20,6 @@ TSB_HOST_ADDR = os.environ.get("TSB_SERVICE_HOST", "localhost")
 # TSB_HOST_PORT = os.environ.get("TSB_SERVICE_PORT", 5554)
 TSB_HOST_PORT = os.environ.get("TSB_SERVICE_PORT", 5555)
 TSB_HOST = "http://" + TSB_HOST_ADDR + ":" + str(TSB_HOST_PORT) + "/ts/"
-
-
 
 
 def ts_list2df(ts_dict_list):
@@ -35,12 +32,10 @@ def ts_list2df(ts_dict_list):
     Returns:
         Time indexed pandas dictionary with data in list
     """ 
-    # print(ts_dict_list)
     assert(len(ts_dict_list) > 0)
     keys_set = set([k for rd in ts_dict_list for k in rd.keys()])
     assert("time" in keys_set)
     data_dict = OrderedDict([("time", []),])
-
     if "longitude" in keys_set and "latitude" in keys_set:
         data_dict["longitude"] = []
         data_dict["latitude"] = []
