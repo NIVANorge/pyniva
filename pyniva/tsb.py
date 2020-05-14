@@ -10,7 +10,6 @@ import pandas as pd
 from dateutil.parser import parse
 
 from .get_data import get_data
-from .get_data import PyNIVAError
 
 # "Public" endpoints for data
 # PUB_SIGNAL = "https://ferrybox-api.niva.no/v1/signal/"
@@ -21,12 +20,6 @@ TSB_HOST_ADDR = os.environ.get("TSB_SERVICE_HOST", "localhost")
 # TSB_HOST_PORT = os.environ.get("TSB_SERVICE_PORT", 5554)
 TSB_HOST_PORT = os.environ.get("TSB_SERVICE_PORT", 5555)
 TSB_HOST = "http://" + TSB_HOST_ADDR + ":" + str(TSB_HOST_PORT) + "/ts/"
-
-
-class TsbError(PyNIVAError):
-    """Exception wrapper for Thing universe
-    """
-    pass
 
 
 def ts_list2df(ts_dict_list):
