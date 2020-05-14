@@ -17,7 +17,7 @@ class PyNIVAError(Exception):
     """Exception wrapper for Thing universe
     """
 
-    def __init__(self, message, trace_id, req_args):
+    def __init__(self, message, trace_id, req_args=None):
         super().__init__(message)
         self.message = message
         self.req_args = req_args
