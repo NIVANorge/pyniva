@@ -1,4 +1,4 @@
-pandas==0.24.1
+pandas==0.25.3
 numpy==1.16.1
 requests==2.20.0
 pyjwt==1.7.1
