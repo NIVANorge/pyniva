@@ -1,9 +1,16 @@
 # -*- coding: utf-8 -*-
 """A setuptools based module for the NIVA tsb module/application.
 """
+from os import path
 
 from setuptools import setup, find_packages
 
+here = path.abspath(path.dirname(__file__))
+
+# get the version from the __version__.py file
+version_dict = {}
+with open(path.join(here, 'pyniva', '__version__.py')) as f:
+    exec(f.read(), version_dict)
 
 setup(
     name='pyniva',
@@ -11,7 +18,7 @@ setup(
     # Versions should comply with PEP440.  For a discussion on single-sourcing
     # the version across setup.py and the project code, see
     # https://packaging.python.org/en/latest/single_source_version.html
-    version='0.4.0',
+    version=version_dict['__version__'],
 
     description="Python wrapper/API for interacting with NIVA's data platform",
 
