@@ -12,6 +12,8 @@ import requests
 import jwt
 import io
 
+from .__version__ import __version__
+
 
 class PyNIVAError(Exception):
     """Exception wrapper for Thing universe
@@ -55,6 +57,7 @@ def get_data(url, params=None, headers=None, session=None):
         headers = {}
     trace_id = str(uuid.uuid4())
     headers['Trace-Id'] = trace_id
+    headers['User-Agent'] = f"pyniva/{__version__}"
     r = rq.get(url, headers=headers, params=params)
     try:
         r.raise_for_status()

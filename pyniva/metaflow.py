@@ -14,6 +14,7 @@ import json
 import os
 import logging
 
+from .__version__ import __version__
 from .get_data import PyNIVAError
 
 # "Internal" endpoint for meta dat
@@ -48,6 +49,8 @@ def get_thing(meta_host, par, header=None, session=None):
 
     trace_id = str(uuid.uuid4())
     header['Trace-Id'] = trace_id
+    header['User-Agent'] = f"pyniva/{__version__}"
+
     if meta_host.startswith(PUB_DETAIL) and "uuid" in par:
         meta_host = meta_host + par["uuid"]
         del par["uuid"]
