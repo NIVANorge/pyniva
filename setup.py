@@ -12,6 +12,9 @@ version_dict = {}
 with open(path.join(here, 'pyniva', '__version__.py')) as f:
     exec(f.read(), version_dict)
 
+with open(path.join(here, 'README.md'), encoding='utf-8') as f:
+    long_description = f.read()
+
 setup(
     name='pyniva',
 
@@ -21,6 +24,8 @@ setup(
     version=version_dict['__version__'],
 
     description="Python wrapper/API for interacting with NIVA's data platform",
+    long_description=long_description,
+    long_description_content_type='text/markdown',
 
     # The project's main homepage.
     url='https://github.com/NIVANorge/pyniva',

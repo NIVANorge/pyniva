@@ -6,26 +6,40 @@ Currently the following parts/APIs are supported:
 * NIVA Flow (`metaflow` for meta data access)
 * `tsb` for access to time series data (including FerryBox)
 
-The library can connect to public exposed end-points and
-directly to our internal services (the latter is usefull for
-testing).
+## Getting access
+
+The API is protected with API tokens. Please contact cloud@niva.no to request access.
+
+When provided with a token, all pyniva invokations need to include a header object:
+
+```
+from pyniva import token2header
+
+header = token2header("/some/folder/containing/token/niva-service-account.json")
+```
+
+Please make sure that the token is not shared. In case of data breach or lost token, please contact us and we will invalidate the token and generate a new one.
+
+## Installation
+The package and all it's dependencies can be installed using `pip`
+
+```
+pip install pyniva
+```
+
+## Contact
+
+If you have any questions or feedback, please contact us at cloud@niva.no
 
 ## General information
 The external APIs uses [jwt](https://jwt.io/) for user authentication and secure
 data transfer. In order to use these you'll need to get a JWT access token (JSON file),
 which contains account information and a private ssh key.
 
-The internal services does
-not require any authentication and they offers no access control to data-sets,
-but you'll need access to the network where the services are running. So in practice
-this will be used for testing and development towrads local development service
-instances.
-
-
 Note that the APIs are intended for interactive use, where the user fetches and
 search for meta data and available data sets, and then query the actual data.
 
-Also note that for time series, the API (`tsb`) is buildt to support interactive
+Also note that for time series, the API (`tsb`) is built to support interactive
 use and visualization by doing server side  aggregating of the data (including
 aggregation of data on (asynchronous) GPS tracks).
 This means that the consumer should in general avoid using the API to download all raw data
@@ -89,30 +103,8 @@ with new types and functionality.
 
 All public methods in `pyniva` has informative docstrings.
 
-`pyniva` also exposes/includes URLs to public and internal `metaflow`
-endpoints.
+`pyniva` also exposes/includes URLs to public `metaflow` endpoints.
 * PUB\_META (public endpoints to get meta data)
-* META\_HOST (internal endpoint for all meta data, edit to fit your installation)
-
-### Creating new Things
-New Thing instances are created using the standard Python constructor,
-and it takes named parameters and/or a dictionary with object attributes.
-
-Example:
-```python
-new_timeseries = TimeSeries(name="testseries", path="test/testseries", unit="V")
-new_timeseries2 = TimeSeries({"name": "testseries", "path": "test/testseries",
-                              "unit": "V"})
-```
-these two are equivalent.
-
-Note that new objects are _not persisted_ in `metaflow`, and you'll have to
-explicitly save them using the `thing.save()` instance method.
-```python
-saved_thing = thing.save(meta_host, header=header)
-```
-Note that `save()` method is recursive, so saving an object with children present in
-the `parts` attribute will also save the children, children's children, etc. 
 
 ### Getting Things from 'metaflow'
 The following class methods will search and/or fetch meta-data
@@ -120,45 +112,52 @@ from the `metaflow` and return the data as a Thing instance or
 a list of Thing instances.
 * `Thing.get_thing(meta_endpoint, header=header, params=params, **kwargs)`
 * `Thing.list(meta_endpoint, header=header, params=params, **kwargs)`
-* `Thing.get_or_create(meta_endpoint, header=header, params=params, **kwargs)`
 
 Arguments can be passed as a parameter dictionary and/or as keyword arguments.
 ```python
-new_vessel = Vessel.get_or_create(meta_host, header=header, params={"name": "MS New"})
+from pyniva import Vessel, PUB_META
+
+vessel = Vessel.get_thing(meta_host=PUB_META, header=header, params={"path": "FA"})
 ```
 is equivalent to
 ```python
-new_vessel = Vessel.get_or_create(meta_host, header=header, name="MS New")
+from pyniva import Vessel, PUB_META
+
+vessel = Vessel.get_thing(PUB_META, header=header, path="FA")
 ```
 
 ### Getting meta data and domain model
 To get the full domain model of a Thing instance use the `thing.get_tree()` instance
 method:
 ```python
-thing_tree = thing.get_tree(meta_host, header=header)
+from pyniva import Thing, PUB_META
+
+thing = Thing.get_thing(PUB_META, header=header, path="FA")
+print(thing.path)
+thing_with_children = thing.get_tree(PUB_META, header=header)
+for part in thing_with_children.parts:
+    # access each part/children of the thing:
+    print(part.path)
+```
+This will print the following:
+```
+FA
+```
+```
+FA/ferrybox
+FA/PCO2
+FA/gpstrack
+FA/PH
+FA/GPS
 ```
 Note that the `thing` instance have to be present in `metaflow`.
-
-
-### Deleting meta-data
-To delete a Thing instance in `metaflow` use the `thing.delete()` instance method.
-```python
-thing.delete(meta_host, header=header)
-```
-Note that deleting an object in `metaflow` has the side effect removing the 'part_of' attribute
-for any child object in the database (this keeps the DB consistent).
-
-The `delete()` method can also delete a full object tree if the parameter `recursive=True` is set:
-```python
-thing_tree.delete(meta_host, header=header, recursive=True)
-```
 
 
 ### Examples
 ```python
 # Get list of available vessels in metaflow, print their names
 # and the number of avaliable time series for each vessel
-from pyniva import Vessel, PUB_META, PUB_TSB, token2header
+from pyniva import Vessel, PUB_META, token2header
 
 header = token2header("path/to/my/tokenfile.json")
 
@@ -191,21 +190,13 @@ persisted by `metaflow` will at least have an `uuid` and a
 `ttype` attribute.
 
 
-### Notes and chevats
-* Saves, updates and deletes can render your Python model inconsistent,
-  since the methods don't change objects in place but return an updated
-  object.
-  
-
-
 ## tsb - time series data
 Time series data is stored in designated time series database(s) and
 the actual data can be accessed through `tsb` service.
 
-`pyniva` exposes/includes URLs to public and internal `tsb`
+`pyniva` exposes/includes URLs to public `tsb`
 endpoints.
 * PUB\_TSB (public endpoint for time series data)
-* TSB\_HOST (internal  endpoint for time series data)
 
 The `tsb` API is intended for interactive use, visualization, data
 "drill in" and merging of asynchronous-heterogenous time series data.
@@ -253,9 +244,9 @@ The `TimeSeries` class has two methods for quering time series data:
 
 ### Query parameters
 These interfaces takes and requiers the same set of parameters. The following
-parameters are must be included:
-* *ts_host*, url for the `tsb` service (in practice this will be `PUB_SIGNAL` or `TSB_HOST`)
-* *headers*, if `PUB_SIGNAL` is used a `JWT` header must also be included
+parameters must be included:
+* *ts_host*, url for the `tsb` service (in practice this will be `PUB_SIGNAL`)
+* *headers*, a `JWT` header must also be included
   (for documentation see `token2header()` documentation above)
 * *a time range* for the query
 
@@ -329,93 +320,3 @@ In addition the API support the following additional parameters:
      1. Only one GPS-track can be submitted at the time
      1. Aggregation level is forced to the GPS-track, with actual
         GPS-track time stamps.
-
-
-
-# Installation
-The package and all it's dependencies can be installed using `pip` (setuptools)
-
-* Download and unpack the source code
-```
-$ git clone git@github.com:NIVANorge/pyniva.git
-```
-
-* Navigate to `pyniva` directory
-```
-$ cd pyniva
-```
-
-* Install package using pip install
-```
-pip install --editable .
-```
-
-## Non-standard dependancies
-The package uses these non standard Python libraries.
-* [pandas](https://pypi.python.org/pypi/pandas/)
-* [numpy](http://www.numpy.org/)
-* [requests](https://pypi.python.org/pypi/requests/)
-* [pyjwt](https://pypi.python.org/pypi/PyJWT/)
-* [cryptography](https://pypi.python.org/pypi/cryptography/)
-
-All the packages will be installed automaticalluy if `pyniva` is installed
-using pip (as indicated above).
-
-
-## Usage and examples
-
-FIXME: more and better examples
-
-```python
-from datetime import datetime, timedelta
-
-from pyniva import Vessel, TimeSeries, token2header, META_HOST, PUB_PLATFORM
-from pyniva import PUB_DETAIL, TSB_HOST, PUB_SIGNAL
-
-vessel_list = Vessel.list(meta_list, header=header)
-for v in vessel_list:
-    print(v.name)
-    # Get signals the vessel
-    signals = v.get_all_tseries(meta_host, header=header)
-
-    interesting_signals = ["raw/ferrybox/INLET_TEMPERATURE",
-                       "raw/ferrybox/TURBIDITY",
-                       "raw/ferrybox/CTD_SALINITY",
-                       "gpstrack"]
-    int_ts = [ts for sn in interesting_signals 
-                 for ts in signals if sn in ts.path]
-    for ts in int_ts:
-        print("  ", ts.path)
-
-    if len(int_ts) > 0:
-        data = TimeSeries.get_timeseries_list(tsb_host, int_ts,
-                                              start_time=datetime.utcnow() - timedelta(7),
-                                              end_time=datetime.utcnow(),
-                                              header=header,
-                                              noffill=True)
-        print(data.head())
-
-```
-
-## Jupyter notebook
-
-   
-Install jupyter notebook with dependencies
-```
-pip install --user jupyter
-
-# dependencies
-pip install --user gmaps
-pip install --user bqplot
-```
-
-Run jupyter notebook:
-
-```
-jupyter notebook pyniva_API_example.ipynb
-```
-
-
-Access the notebook at http://localhost:8888
-   
-See General information above for information about JWT access tokens.

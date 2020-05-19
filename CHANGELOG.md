@@ -3,7 +3,8 @@
 ## 0.4.1
 
 - added pyniva version as user agent header to all requests made to the API
-
+- Updated readme and added it to long_description making it appear at
+  - removed all references to update/delete/create functions in pyniva. These do not work and are not exposed.
 
 ## 0.4.0
 
