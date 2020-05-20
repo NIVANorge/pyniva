@@ -1,5 +1,10 @@
 # Changelog
 
+## 0.4.2
+
+- upgraded python image used for building and publishing in circleci to 3.8.3
+  - hopefully this resolves problems publishing package with markdown format long_description
+
 ## 0.4.1
 
 - added pyniva version as user agent header to all requests made to the API
