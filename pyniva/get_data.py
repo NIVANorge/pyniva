@@ -3,11 +3,13 @@
 """
 Functions to authenticate against and grab data from NIVA API endpoints
 """
-__all__ = ["get_data", "token2header", "PyNIVAError"]
+__all__ = ["get_data", "token2header", "PyNIVAError", "get_newly_inserted_data"]
 import logging
 import uuid
-from datetime import timedelta
+import datetime as dt
 import json
+from urllib.parse import urljoin
+
 import requests
 import jwt
 import io
@@ -58,17 +60,9 @@ def get_data(url, params=None, headers=None, session=None):
     trace_id = str(uuid.uuid4())
     headers['Trace-Id'] = trace_id
     headers['User-Agent'] = f"pyniva/{__version__}"
-    r = rq.get(url, headers=headers, params=params)
-    try:
-        r.raise_for_status()
-    except requests.exceptions.HTTPError:
-        if 'application/json' in r.headers.get('Content-Type'):
-            body = r.json()
-            raise PyNIVAError(body.get("message", body), trace_id=trace_id, req_args=body.get("req_args"))
-        else:
-            raise PyNIVAError(message=r.text, trace_id=trace_id)
-
-    full_data = r.json()
+    response = rq.get(url, headers=headers, params=params)
+    tsb_response_raise_for_status(response, trace_id)
+    full_data = response.json()
 
     # If no error occurred the data is found in the "t" attribute of
     # returned data
@@ -78,6 +72,17 @@ def get_data(url, params=None, headers=None, session=None):
         return full_data
 
 
+def tsb_response_raise_for_status(response, trace_id):
+    try:
+        response.raise_for_status()
+    except requests.exceptions.HTTPError:
+        if 'application/json' in response.headers.get('Content-Type'):
+            body = response.json()
+            raise PyNIVAError(body.get("message", body), trace_id=trace_id, req_args=body.get("req_args"))
+        else:
+            raise PyNIVAError(message=response.text, trace_id=trace_id)
+
+
 def token2header(token_file):
     """Get JWT token header from GCP service account JSON file
 
@@ -85,7 +90,7 @@ def token2header(token_file):
         token_file (file-like or string): Open file/file-like object or path to token file
 
     Returns:
-        Dictionary with JWT header for subsequent requests towards NIVA end-points 
+        Dictionary with JWT header for subsequent requests towards NIVA end-points
     """
     if isinstance(token_file, str):
         with open(token_file, "r") as f:
@@ -103,5 +108,30 @@ def token2header(token_file):
     }
 
     token = jwt.encode(payload, cmrsa["private_key"], algorithm="RS256")
-    header = { "Authorization": b"Bearer " + token }
+    header = {"Authorization": b"Bearer " + token}
     return header
+
+
+def get_newly_inserted_data(start_time: dt.datetime, end_time: dt.datetime, aggregate: bool,
+                            meta_host: str, ts_host: str, headers=None, session=None):
+    params = {'start': start_time.isoformat(),
+              'end': end_time.isoformat(),
+              'aggregate': aggregate}
+
+    rq = session or requests
+    if headers is None:
+        headers = {}
+    trace_id = str(uuid.uuid4())
+    headers['Trace-Id'] = trace_id
+    headers['User-Agent'] = f"pyniva/{__version__}"
+    response = rq.get(urljoin(ts_host, 'time-series-by-insert-time'), headers=headers, params=params)
+    tsb_response_raise_for_status(response, trace_id)
+    data = response.json()
+
+    uuids = list({row['uuid'] for row in data})
+    r = rq.get(meta_host, params={'uuid': ','.join(uuids)}, headers=headers)
+    r.raise_for_status()
+    t = r.json()
+
+    uuid_path_map = {thing['uuid']: thing['path'] for thing in t['t']}
+    return [{**row, 'path': uuid_path_map[row['uuid']]} for row in data]

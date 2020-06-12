@@ -23,13 +23,10 @@ META_HOST_ADDR = os.environ.get("METAFLOW_SERVICE_HOST", "localhost")
 META_HOST_PORT = os.environ.get("METAFLOW_SERVICE_PORT", 5556)
 META_HOST = "http://" + META_HOST_ADDR + ":" + str(META_HOST_PORT) + "/"
 
-
-
 # "Public" endpoints for meta-data
 PUB_PLATFORM = "https://ferrybox-api.niva.no/v1/vessels"
 PUB_DETAIL = "https://ferrybox-api.niva.no/v1/details/"
 PUB_META = "https://ferrybox-api.niva.no/v1/metaflow/"
-
 
 
 def get_thing(meta_host, par, header=None, session=None):

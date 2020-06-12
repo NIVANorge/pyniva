@@ -23,12 +23,10 @@ class ThingError(PyNIVAError):
     pass
 
 
-
-class Thing():
+class Thing:
     """Base class for the Thing universe
     """
     TTYPE = "thing"
-
 
     def __init__(self, meta_dict=None, **kwargs):
         if meta_dict is None:
@@ -43,13 +41,11 @@ class Thing():
             meta_dict["ttype"] = self.TTYPE
         self._meta_dict = meta_dict
 
-
     def __getattr__(self, attr):
         try:
             return self._meta_dict[attr]
         except:
             raise AttributeError("Attribute '%s' not found" % (attr,))
-
 
     def __setattr__(self, attr, value):
         if attr != "_meta_dict":
@@ -57,11 +53,8 @@ class Thing():
         else:
             self.__dict__[attr] = value
 
-
-
     def __dir__(self):
-        return(super().__dir__() + [k for k in self._meta_dict.keys() if not k.startswith("_")])
-
+        return (super().__dir__() + [k for k in self._meta_dict.keys() if not k.startswith("_")])
 
     @classmethod
     def _thing_dispatch(cls, thing_data):
@@ -95,7 +88,6 @@ class Thing():
             raise ThingError("Unknown data type passed, must be a dictionary or a list of dictionarise")
         return thing_meta
 
-
     @classmethod
     def get_thing(cls, meta_host, params=None, header=None, session=None, **kwargs):
         """Get a Thing instance (or subclass) or a list of instances
@@ -121,7 +113,6 @@ class Thing():
             c_params[k] = v
         thing_meta = meta_get_thing(meta_host, c_params, header=header, session=session)
         return cls._thing_dispatch(thing_meta)
-
 
     @classmethod
     def get_or_create(cls, meta_host, params=None, header=None,
@@ -166,7 +157,6 @@ class Thing():
                 c_thing = cls._thing_dispatch(c_params)
         return c_thing
 
-
     @classmethod
     def list(cls, meta_host, header=None, session=None, **kwargs):
         """Get a list of Thing instances of the type matching the
@@ -192,7 +182,6 @@ class Thing():
         t_list = cls.get_thing(meta_host, params=params, header=header, session=session)
         return t_list if isinstance(t_list, list) else [t_list,]
 
-
     @classmethod
     def tdict2thing(cls, tdict, parts=False):
         """Dispatcher to create a Thing (or subclass) instance
@@ -207,7 +196,6 @@ class Thing():
         if parts and "parts" in tdict:
             tdict["parts"] = [cls.tdict2thing(part) for part in tdict["parts"]]
         return _dispatcher[tdict["ttype"]](tdict)
-
 
     def as_dict(self, shallow=False):
         """Return data of instance as a dictionary.
@@ -247,7 +235,6 @@ class Thing():
             return out_dict
         return(_dict_iter(self._meta_dict))
 
-
     def update(self, data=None, **kwargs):
         """Update Thing instance in place
 
@@ -269,7 +256,6 @@ class Thing():
             self._meta_dict[k] = v
 
         return self
-
 
     def save(self, meta_host, header=None, session=None):
         """Save/update Thing in 'metaflow' meta-data service
@@ -305,7 +291,6 @@ class Thing():
 
         return updated_thing
 
-
     def delete(self, meta_host, header=None, recursive=True, session=None):
         """Delete the object in meta-data service
 
@@ -331,7 +316,6 @@ class Thing():
         deleted_data = meta_delete_thing(meta_host, self.as_dict(shallow=True), session=session)
         deleted_thing = self._thing_dispatch(deleted_data)
         return deleted_thing
-
 
     def get_tree(self, meta_host, header=None, levels=100, session=None):
         """Get data model tree for Thing instance
@@ -388,12 +372,10 @@ class Platform(Thing):
         return out_ts_list
 
 
-
 class Vessel(Platform):
     """Ship/Vessels
     """
     TTYPE = "vessel"
-
 
 
 class Sensor(Component):
@@ -404,7 +386,6 @@ class Sensor(Component):
 
 class TimeSeries(Thing):
     TTYPE = "tseries"
-    
 
     @classmethod
     def get_timeseries_list(cls, ts_host, timeseries,
@@ -434,7 +415,6 @@ class TimeSeries(Thing):
                              df.columns)
         return df
 
-
     def get_tseries(self, ts_host, session=None, **kwargs):
         """Metod for querying a time series from the tsb backend
         For further details about query parameters etc. see
@@ -455,7 +435,6 @@ class TimeSeries(Thing):
         """Same as get_tseries() method
         """
         return self.get_tseries(ts_host, session=session, **kwargs)
-
 
     @property
     def start_time(self):
