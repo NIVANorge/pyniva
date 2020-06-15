@@ -34,8 +34,8 @@ def populate_database():
 
 
 @pytest.mark.docker_all_services
-def test_request_error_handling_for_missing_metadata(populate_database):
-    """ Testing that we receive a status 404 error if we try to query for a uuid that does not exist"""
+def test_tsb_for_newly_populated_data(populate_database):
+    """ Testing that the tsb api responds correctly to requests for newly inserted data"""
     start = dt.datetime.utcnow()-dt.timedelta(hours=1)
     end = dt.datetime.utcnow()+dt.timedelta(hours=1)
     new_data = pyniva.get_newly_inserted_data(start, end, aggregate=True, meta_host=META_URL, ts_host=TSB_URL)

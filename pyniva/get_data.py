@@ -8,6 +8,7 @@ import logging
 import uuid
 import datetime as dt
 import json
+from math import ceil
 from urllib.parse import urljoin
 
 import requests
@@ -129,9 +130,12 @@ def get_newly_inserted_data(start_time: dt.datetime, end_time: dt.datetime, aggr
     data = response.json()
 
     uuids = list({row['uuid'] for row in data})
-    r = rq.get(meta_host, params={'uuid': ','.join(uuids)}, headers=headers)
-    r.raise_for_status()
-    t = r.json()
-
-    uuid_path_map = {thing['uuid']: thing['path'] for thing in t['t']}
+    uuid_path_map = {}
+    query_size = 80  # Number of uuids to query per request, url length is limited so we need to bunch..
+    for i in range(ceil(len(uuids)/query_size)):
+        r = rq.get(meta_host, params={'uuid': ','.join(uuids[i*query_size:(i+1)*query_size])}, headers=headers)
+        r.raise_for_status()
+        t = r.json()
+        for thing in t['t']:
+            uuid_path_map[thing['uuid']] = thing['path']
     return [{**row, 'path': uuid_path_map[row['uuid']]} for row in data]
