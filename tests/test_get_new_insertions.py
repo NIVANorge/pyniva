@@ -33,7 +33,7 @@ def populate_database():
     update_response.raise_for_status()
 
 
-@pytest.mark.docker_all_services
+@pytest.mark.nivacloud_docker
 def test_tsb_for_newly_populated_data(populate_database):
     """ Testing that the tsb api responds correctly to requests for newly inserted data"""
     start = dt.datetime.utcnow()-dt.timedelta(hours=1)
