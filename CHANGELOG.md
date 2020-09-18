@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.4.3
+
+- upgraded pandas version to 1.1
+
 ## 0.4.2
 
 - upgraded python image used for building and publishing in circleci to 3.8.3
