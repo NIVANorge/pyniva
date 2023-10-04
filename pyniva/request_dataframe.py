@@ -11,9 +11,7 @@ from dateutil.parser import parse
 from .thing import Vessel
 from .metaflow import PUB_META
 from .tsb import PUB_TSB
-
-# from .pyniva import Vessel, TimeSeries, token2header
-# from pyniva import META_HOST, PUB_META, TSB_HOST, PUB_TSB
+import pandas as pd
 
 
 def get_paths_measurements(vessel_name, header, meta_host=None):
@@ -32,37 +30,13 @@ def get_paths_measurements(vessel_name, header, meta_host=None):
     return vessel_measurements, tseries_paths
 
 
-def get_available_parameters(platform_code, header, meta_host=None):
+def get_available_parameters(platform_code, header, meta_host=None, exclude_tests=True):
     measurements, tseries_paths = get_paths_measurements(
         platform_code, header, meta_host
     )
-    available_paths = [
-        p for p in tseries_paths if "TEST" not in p and "SYSTEM" not in p
-    ]
+    if exclude_tests:
+        available_paths = [p for p in tseries_paths if "TEST" not in p]
     return available_paths
-
-
-def get_available_flags(platform_code, header, meta_host=None):
-    measurements, tseries_paths = get_paths_measurements(
-        platform_code, header, meta_host
-    )
-    available_paths = [p for p in tseries_paths if "TEST" in p]
-    return available_paths
-
-
-def get_available_ferrybox_sensor_group_parameters(
-    platform_code, header, meta_host=None
-):
-    measurements, tseries_paths = get_paths_measurements(
-        platform_code, header, meta_host
-    )
-    available_paths = [
-        p for p in tseries_paths if "TEST" not in p and "FERRYBOX" in p.upper()
-    ]
-    return available_paths
-
-
-import pandas as pd
 
 
 def get_ship_data(

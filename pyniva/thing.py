@@ -121,7 +121,7 @@ class Thing:
             A Thing (or subclass) instance or a list of instances fetched
             from 'metaflow' back-end.
         """
-        print(f"get thing from {meta_host}")
+
         if params is None:
             c_params = dict()
         else:

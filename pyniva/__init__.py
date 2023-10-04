@@ -23,4 +23,5 @@ __all__ = [
     "get_newly_inserted_data",
     "get_paths_measurements",
     "get_ship_data",
+    "get_available_parameters",
 ]
