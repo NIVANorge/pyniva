@@ -27,7 +27,6 @@ def get_paths_measurements(vessel_name, header, meta_host=None):
         meta_host=meta_host, header=header, params={"path": vessel_name}
     )
 
-    print(f"vessel object {vessel_object}")
     vessel_measurements = vessel_object.get_all_tseries(meta_host, header)
     tseries_paths = [m.path for m in vessel_measurements]
     return vessel_measurements, tseries_paths
@@ -43,14 +42,20 @@ def get_available_parameters(platform_code, header, meta_host=None):
     return available_paths
 
 
-def get_available_flags(platform_code):
-    measurements, tseries_paths = get_paths_measurements(platform_code)
+def get_available_flags(platform_code, header, meta_host=None):
+    measurements, tseries_paths = get_paths_measurements(
+        platform_code, header, meta_host
+    )
     available_paths = [p for p in tseries_paths if "TEST" in p]
     return available_paths
 
 
-def get_available_ferrybox_sensor_group_parameters(platform_code):
-    measurements, tseries_paths = get_paths_measurements(platform_code)
+def get_available_ferrybox_sensor_group_parameters(
+    platform_code, header, meta_host=None
+):
+    measurements, tseries_paths = get_paths_measurements(
+        platform_code, header, meta_host
+    )
     available_paths = [
         p for p in tseries_paths if "TEST" not in p and "FERRYBOX" in p.upper()
     ]
