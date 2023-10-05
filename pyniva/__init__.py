@@ -1,7 +1,11 @@
 from .thing import Thing, Platform, Vessel, Sensor, Component
 from .thing import TimeSeries, FlagTimeSeries, GPSTrack
 from .get_data import token2header, PyNIVAError, get_newly_inserted_data
-from .request_dataframe import get_paths_measurements, get_ship_data
+from .request_dataframe import (
+    get_paths_measurements,
+    get_ship_data,
+    get_available_parameters,
+)
 from .tsb import TSB_HOST, PUB_TSB
 from .metaflow import META_HOST, PUB_META
 
