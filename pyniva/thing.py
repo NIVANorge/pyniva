@@ -498,10 +498,6 @@ class TimeSeries(Thing):
             **kwargs,
         )
 
-    def get_ts(self, ts_host, session=None, **kwargs):
-        """Same as get_tseries() method"""
-        return self.get_tseries(ts_host, session=session, **kwargs)
-
     @property
     def start_time(self):
         if self._meta_dict.get("start_time", False):
