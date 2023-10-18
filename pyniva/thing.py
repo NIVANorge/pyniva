@@ -3,8 +3,16 @@
 """
 Object oriented interface to NIVA Thing universe
 """
-__all__ = ["Thing", "Platform", "Vessel", "Sensor", "TimeSeries",
-           "FlagTimeSeries", "GPSTrack", "ThingError"]
+__all__ = [
+    "Thing",
+    "Platform",
+    "Vessel",
+    "Sensor",
+    "TimeSeries",
+    "FlagTimeSeries",
+    "GPSTrack",
+    "ThingError",
+]
 
 from dateutil.parser import parse
 
@@ -18,14 +26,14 @@ from .tsb import get_signals
 
 
 class ThingError(PyNIVAError):
-    """Exception wrapper for Thing universe
-    """
+    """Exception wrapper for Thing universe"""
+
     pass
 
 
 class Thing:
-    """Base class for the Thing universe
-    """
+    """Base class for the Thing universe"""
+
     TTYPE = "thing"
 
     def __init__(self, meta_dict=None, **kwargs):
@@ -34,7 +42,7 @@ class Thing:
         for k, v in kwargs.items():
             meta_dict[k] = v
         if "path" in meta_dict and "name" not in meta_dict:
-            assert(isinstance(meta_dict["path"], str))
+            assert isinstance(meta_dict["path"], str)
             meta_dict["name"] = meta_dict["path"].split("/")[-1]
 
         if "ttype" not in meta_dict:
@@ -54,7 +62,9 @@ class Thing:
             self.__dict__[attr] = value
 
     def __dir__(self):
-        return (super().__dir__() + [k for k in self._meta_dict.keys() if not k.startswith("_")])
+        return super().__dir__() + [
+            k for k in self._meta_dict.keys() if not k.startswith("_")
+        ]
 
     @classmethod
     def _thing_dispatch(cls, thing_data):
@@ -62,16 +72,20 @@ class Thing:
             if len(thing_data) == 0:
                 return thing_data
             elif len(thing_data) == 1:
-                assert(isinstance(thing_data, dict) and "ttype" in thing_data[0] and thing_data[0]["ttype"] in _valid_types)
+                assert (
+                    isinstance(thing_data, dict)
+                    and "ttype" in thing_data[0]
+                    and thing_data[0]["ttype"] in _valid_types
+                )
                 thing_meta = _dispatcher[thing_data[0]["ttype"]](thing_meta[0])
             elif isinstance(thing_data, list) and len(thing_data) > 1:
                 thing_meta = [cls._thing_dispatch(t) for t in thing_data]
         elif isinstance(thing_data, dict) and "ttype" in thing_data:
             try:
-                assert(thing_data["ttype"] in _valid_types)
+                assert thing_data["ttype"] in _valid_types
             except AssertionError:
                 raise ThingError("%s is not a valid thing type" % thing_data["ttype"])
-            for k,v in thing_data.items():
+            for k, v in thing_data.items():
                 if isinstance(v, dict) and "ttype" in v:
                     thing_data[k] = cls._thing_dispatch(v)
                 elif isinstance(v, list):
@@ -85,7 +99,9 @@ class Thing:
 
             thing_meta = _dispatcher[thing_data["ttype"]](thing_data)
         else:
-            raise ThingError("Unknown data type passed, must be a dictionary or a list of dictionarise")
+            raise ThingError(
+                "Unknown data type passed, must be a dictionary or a list of dictionarise"
+            )
         return thing_meta
 
     @classmethod
@@ -98,13 +114,14 @@ class Thing:
             meta_host: URL to meta server (i.e. 'metaflow' service)
             params:    Dictionary with query parameters
             header:    HTTP request header (for JWT authentication and encryption)
-            session:   Requests session object 
+            session:   Requests session object
             **kwargs:  Named parameters
 
         Returns:
             A Thing (or subclass) instance or a list of instances fetched
             from 'metaflow' back-end.
         """
+
         if params is None:
             c_params = dict()
         else:
@@ -115,8 +132,15 @@ class Thing:
         return cls._thing_dispatch(thing_meta)
 
     @classmethod
-    def get_or_create(cls, meta_host, params=None, header=None,
-                      path_only=False, session=None, **kwargs):
+    def get_or_create(
+        cls,
+        meta_host,
+        params=None,
+        header=None,
+        path_only=False,
+        session=None,
+        **kwargs,
+    ):
         """Get a single Thing instance (or subclass) from
         the 'metaflow' back-end or if it doesn't exist
         create a new instance.
@@ -126,8 +150,8 @@ class Thing:
             params:    Dictionary with query parameters
             header:    HTTP request header (for JWT authentication and encryption)
             path_only: If True only the path will be used in the 'metaflow' query
-            session:   Requests session object 
-            **kwargs:  Named parameters    
+            session:   Requests session object
+            **kwargs:  Named parameters
 
         Returns:
             A single Thing (or subclass) instance or a list of instances fetched
@@ -138,19 +162,25 @@ class Thing:
         else:
             c_params = params.copy()
         if path_only:
-            assert("path" in c_params or "path" in kwargs)
-            c_par = {"path": kwargs["path"]} if "path" in kwargs else {"path": params["path"]}
+            assert "path" in c_params or "path" in kwargs
+            c_par = (
+                {"path": kwargs["path"]}
+                if "path" in kwargs
+                else {"path": params["path"]}
+            )
             c_thing = cls.get_thing(meta_host, header=header, session=session, **c_par)
         else:
-            c_thing = cls.get_thing(meta_host, params=params, header=header, session=session, **kwargs)
+            c_thing = cls.get_thing(
+                meta_host, params=params, header=header, session=session, **kwargs
+            )
         if isinstance(c_thing, list):
             try:
-                assert(len(c_thing) <= 1)
+                assert len(c_thing) <= 1
             except AssertionError:
-                raise(ThingError("Thing not unique, multiple Things matches search"))
+                raise (ThingError("Thing not unique, multiple Things matches search"))
             if len(c_thing) == 0:
                 # Create new object
-                for k,v in kwargs.items():
+                for k, v in kwargs.items():
                     c_params[k] = v
                 if "ttype" not in c_params:
                     c_params["ttype"] = cls.TTYPE
@@ -166,7 +196,7 @@ class Thing:
             meta_host: URL to meta server (i.e. 'metaflow' service)
             header:    HTTP request header (for JWT authentication and encryption)
             session:   Requests session object
-            **kwargs:  Named parameters    
+            **kwargs:  Named parameters
 
         Returns:
             A list of Things (or subclass) instance or a list of instances fetched
@@ -180,7 +210,13 @@ class Thing:
         for k, v in kwargs.items():
             params[k] = v
         t_list = cls.get_thing(meta_host, params=params, header=header, session=session)
-        return t_list if isinstance(t_list, list) else [t_list,]
+        return (
+            t_list
+            if isinstance(t_list, list)
+            else [
+                t_list,
+            ]
+        )
 
     @classmethod
     def tdict2thing(cls, tdict, parts=False):
@@ -207,6 +243,7 @@ class Thing:
         Returns:
             A JSON serializable dictionary representing the Thing instance
         """
+
         def _dict_iter(c_dict):
             out_dict = c_dict.copy()
             for k in out_dict.keys():
@@ -214,7 +251,11 @@ class Thing:
                     if not shallow and not k == "part_of":
                         out_dict[k] = out_dict[k].as_dict(shallow)
                     else:
-                        out_dict[k] = out_dict[k].uuid if hasattr(out_dict[k], "uuid") else out_dict[k].path
+                        out_dict[k] = (
+                            out_dict[k].uuid
+                            if hasattr(out_dict[k], "uuid")
+                            else out_dict[k].path
+                        )
                 elif isinstance(out_dict[k], list):
                     c_list = []
                     for e in out_dict[k]:
@@ -233,14 +274,15 @@ class Thing:
                 else:
                     pass
             return out_dict
-        return(_dict_iter(self._meta_dict))
+
+        return _dict_iter(self._meta_dict)
 
     def update(self, data=None, **kwargs):
         """Update Thing instance in place
 
         Args:
             data: dictionary with new instance data
-            **kwargs:  Named parameters    
+            **kwargs:  Named parameters
 
         Returns:
             self
@@ -263,7 +305,7 @@ class Thing:
         Note that the method will also recursively update/save
         objects found in self.parts list to ensure 'metaflow' is kept
         in a consistent state.
-        
+
         Args:
             meta_host: URL of 'metaflow' service
             header: HTTP request header (for JWT authentication and encryption)
@@ -275,15 +317,16 @@ class Thing:
         """
         c_parts = self._meta_dict.get("parts", None)
         if c_parts is not None:
-            del(self._meta_dict["parts"])
+            del self._meta_dict["parts"]
 
-        updated_data = meta_update_thing(meta_host, self.as_dict(shallow=True),
-                                         header=header, session=session)
+        updated_data = meta_update_thing(
+            meta_host, self.as_dict(shallow=True), header=header, session=session
+        )
         updated_thing = self._thing_dispatch(updated_data)
 
         if c_parts is not None:
             # Handle possible inconsistencies in parts
-            assert(isinstance(c_parts, list))
+            assert isinstance(c_parts, list)
             for p in c_parts:
                 p.part_of = updated_thing.uuid
                 p = p.save(meta_host, header=header, session=session)
@@ -306,14 +349,18 @@ class Thing:
             The deleted instance (self).
         """
         if recursive:
-            c_instance = self.get_tree(meta_host, header=header, levels=1, session=session)
+            c_instance = self.get_tree(
+                meta_host, header=header, levels=1, session=session
+            )
             c_parts = c_instance.parts if hasattr(c_instance, "parts") else []
             for p in c_parts:
                 p.delete(meta_host, header=header, recursive=recursive, session=session)
         if hasattr(self, "parts"):
-            del(self._meta_dict["parts"])
+            del self._meta_dict["parts"]
 
-        deleted_data = meta_delete_thing(meta_host, self.as_dict(shallow=True), session=session)
+        deleted_data = meta_delete_thing(
+            meta_host, self.as_dict(shallow=True), session=session
+        )
         deleted_thing = self._thing_dispatch(deleted_data)
         return deleted_thing
 
@@ -329,19 +376,21 @@ class Thing:
         Returns:
             Thing instance with childrens (in 'parts' attribute) attached
         """
-        return self.get_thing(meta_host, header=header, uuid=self.uuid, parts=levels, session=session)
+        return self.get_thing(
+            meta_host, header=header, uuid=self.uuid, parts=levels, session=session
+        )
 
 
 class Component(Thing):
-    """Component or part of a thing
-    """
+    """Component or part of a thing"""
+
     TTYPE = "component"
     pass
 
 
 class Platform(Thing):
-    """Base class for sensor/measurement platforms
-    """
+    """Base class for sensor/measurement platforms"""
+
     TTYPE = "platform"
 
     def get_all_tseries(self, meta_host, header=None, session=None):
@@ -354,33 +403,36 @@ class Platform(Thing):
             session: Requests session object
 
         Returns:
-            A list of TimeSeries instances attached to the Platform 
+            A list of TimeSeries instances attached to the Platform
         """
+
         def _part_uuid2thing(thing, tlookup):
             if isinstance(thing, dict):
                 return tlookup[thing["uuid"]]
             if hasattr(thing, "parts") and thing._meta_dict["parts"] is not None:
-                thing._meta_dict["parts"] = [_part_uuid2thing(part, tlookup) for part in thing.parts]
+                thing._meta_dict["parts"] = [
+                    _part_uuid2thing(part, tlookup) for part in thing.parts
+                ]
             return tlookup[thing.uuid]
 
         full_thing = self.get_tree(meta_host, header=header, session=session)
         thing_tree = full_thing.as_dict()
 
         ts_list = [Thing.tdict2thing(ts) for ts in thing_tree2ts(thing_tree)]
-        ts_dict = {ts.uuid:ts for ts in ts_list}
+        ts_dict = {ts.uuid: ts for ts in ts_list}
         out_ts_list = [_part_uuid2thing(ts, ts_dict) for ts in ts_list]
         return out_ts_list
 
 
 class Vessel(Platform):
-    """Ship/Vessels
-    """
+    """Ship/Vessels"""
+
     TTYPE = "vessel"
 
 
 class Sensor(Component):
-    """Measurement system or sensor system
-    """
+    """Measurement system or sensor system"""
+
     TTYPE = "sensor"
 
 
@@ -388,8 +440,9 @@ class TimeSeries(Thing):
     TTYPE = "tseries"
 
     @classmethod
-    def get_timeseries_list(cls, ts_host, timeseries,
-                            name_headers=False, session=None, **kwargs):
+    def get_timeseries_list(
+        cls, ts_host, timeseries, name_headers=False, session=None, **kwargs
+    ):
         """Metod for querying a time series from the tsb backend
         For further details about query parameters etc. see
         'pyniva' documentation.
@@ -404,15 +457,22 @@ class TimeSeries(Thing):
             A Pandas DataFrame with the timeseries
         """
         if isinstance(timeseries, TimeSeries):
-            uuid_list = [timeseries.uuid,]
+            uuid_list = [
+                timeseries.uuid,
+            ]
         else:
             uuid_list = [ts.uuid for ts in timeseries]
         df = get_signals(ts_host, uuid_list, session=session, **kwargs)
         if name_headers:
-            uuid2meta = {ts.uuid:{"name":ts.name, "path":ts.path} 
-                         for ts in timeseries if hasattr(ts, "name")}
-            df.columns = map(lambda x: x if not uuid2meta.get(x, False) else uuid2meta[x]["name"],
-                             df.columns)
+            uuid2meta = {
+                ts.uuid: {"name": ts.name, "path": ts.path}
+                for ts in timeseries
+                if hasattr(ts, "name")
+            }
+            df.columns = map(
+                lambda x: x if not uuid2meta.get(x, False) else uuid2meta[x]["path"],
+                df.columns,
+            )
         return df
 
     def get_tseries(self, ts_host, session=None, **kwargs):
@@ -428,13 +488,15 @@ class TimeSeries(Thing):
         Returns:
             A Pandas DataFrame with the timeseries
         """
-        return self.get_timeseries_list(ts_host, [self,], name_headers=True, session=session,
-                                        **kwargs)
-
-    def get_ts(self, ts_host, session=None, **kwargs):
-        """Same as get_tseries() method
-        """
-        return self.get_tseries(ts_host, session=session, **kwargs)
+        return self.get_timeseries_list(
+            ts_host,
+            [
+                self,
+            ],
+            name_headers=True,
+            session=session,
+            **kwargs,
+        )
 
     @property
     def start_time(self):
@@ -453,6 +515,7 @@ class TimeSeries(Thing):
             return self._meta_dict["end_time"]
         else:
             return None
+
 
 # end of class TimeSeries
 
@@ -476,7 +539,7 @@ _dispatcher = {
     "sensor": Sensor,
     "tseries": TimeSeries,
     "qctseries": FlagTimeSeries,
-    "gpstrack": GPSTrack
+    "gpstrack": GPSTrack,
 }
 
 _valid_types = [k for k in _dispatcher]
