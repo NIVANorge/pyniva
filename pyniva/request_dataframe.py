@@ -56,8 +56,9 @@ def get_ship_data(
     # make sure that all datasets have coordinates
     if f"{vessel_name}/gpstrack" not in param_paths:
         param_paths.append(f"{vessel_name}/gpstrack")
+
     for path in param_paths:
-        print(path)
+        logging.info(path)
         try:
             tseries_idx = vessel_paths.index(path)
 
@@ -76,52 +77,26 @@ def get_ship_data(
                 df = var
             else:
                 df = df.merge(var, on="time", how="outer")
+
         except Exception as e:
             print(f"could not download {path, e}")
 
     if df.empty:
         print("Nothing was downloaded")
     else:
+
+        if not noqc:
+
+            df = df.dropna(subset=["latitude", "longitude"], how="all")
+            # also do not get coordinates if all data columns are empty
+            data_cols = [
+                p
+                for p in param_paths
+                if p not in ["time", "latitude", "longitude", f"{vessel_name}/gpstrack"]
+                and "TEST" not in p
+            ]
+
+            df = df.dropna(subset=data_cols, how="all")
         df = df.sort_values(by="time", ascending=True)
         df = df.reset_index()
-
     return df
-
-
-def get_ship_data2(
-    vessel_name: str,
-    param_paths: list,
-    start_time,
-    end_time,
-    noqc,
-    header,
-    dt=0,
-    pub_tsb=PUB_TSB,
-    meta_host=PUB_META,
-):
-    print("Downloading data for ", vessel_name)
-
-    vessel_object = Vessel.get_thing(
-        meta_host=meta_host, header=header, params={"path": vessel_name}
-    )
-    vessel_signals = vessel_object.get_all_tseries(meta_host, header)
-    vessel_signals = [
-        s
-        for s in vessel_signals
-        if s.path in param_paths or s.path == f"{vessel_name}/gpstrack"
-    ]
-
-    # make sure that all datasets have coordinates
-
-    var = TimeSeries.get_timeseries_list(
-        ts_host=pub_tsb,
-        timeseries=vessel_signals,
-        header=header,
-        noqc=noqc,
-        dt=dt,
-        start_time=start_time,
-        end_time=end_time,
-        name_headers=True,
-    )
-
-    return var
