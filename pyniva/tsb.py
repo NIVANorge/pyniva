@@ -13,7 +13,10 @@ from .get_data import get_data
 
 # "Public" endpoints for data
 # PUB_SIGNAL = "https://ferrybox-api.niva.no/v1/signal/"
-PUB_TSB = "https://ferrybox-api.niva.no/v1/tsb/"
+
+path = "https://ferrybox-api.niva.no"
+
+PUB_TSB = f"{path}/v1/tsb/"
 
 # "Internal" endpoints for data
 TSB_HOST_ADDR = os.environ.get("TSB_SERVICE_HOST", "localhost")

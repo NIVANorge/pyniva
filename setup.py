@@ -56,7 +56,5 @@ setup(
 
     keywords='metadata timeseries data',
     packages=find_packages(exclude=['contrib', 'docs', 'tests']),
-    install_requires=['pandas>=1.1,<2.0', 'numpy>=1.16,<2.0', 'requests>=2.20,<3.0',
-                      'pyjwt>=1.7,<2.0', 'cryptography>=2.5,<3.0'],
     test_suite='tests',
 )

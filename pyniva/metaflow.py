@@ -4,8 +4,17 @@ Set of helper functions used to get, query, traverse and manipulate
 Meta data in the metaflow service
 """
 
-__all__ = ["META_HOST", "PUB_PLATFORM", "PUB_DETAIL", "PUB_META", "get_thing", "update_thing",
-           "delete_thing", "thing_tree2ts", "path2all_ts"]
+__all__ = [
+    "META_HOST",
+    "PUB_PLATFORM",
+    "PUB_DETAIL",
+    "PUB_META",
+    "get_thing",
+    "update_thing",
+    "delete_thing",
+    "thing_tree2ts",
+    "path2all_ts",
+]
 
 import uuid
 
@@ -24,9 +33,11 @@ META_HOST_PORT = os.environ.get("METAFLOW_SERVICE_PORT", 5556)
 META_HOST = "http://" + META_HOST_ADDR + ":" + str(META_HOST_PORT) + "/"
 
 # "Public" endpoints for meta-data
-PUB_PLATFORM = "https://ferrybox-api.niva.no/v1/vessels"
-PUB_DETAIL = "https://ferrybox-api.niva.no/v1/details/"
-PUB_META = "https://ferrybox-api.niva.no/v1/metaflow/"
+path = "https://ferrybox-api.niva.no"
+
+PUB_PLATFORM = f"{path}/v1/vessels"
+PUB_DETAIL = f"{path}/v1/details/"
+PUB_META = f"{path}/v1/metaflow/"
 
 
 def get_thing(meta_host, par, header=None, session=None):
@@ -45,8 +56,8 @@ def get_thing(meta_host, par, header=None, session=None):
     rq = session or requests
 
     trace_id = str(uuid.uuid4())
-    header['Trace-Id'] = trace_id
-    header['User-Agent'] = f"pyniva/{__version__}"
+    header["Trace-Id"] = trace_id
+    header["User-Agent"] = f"pyniva/{__version__}"
 
     if meta_host.startswith(PUB_DETAIL) and "uuid" in par:
         meta_host = meta_host + par["uuid"]
@@ -57,7 +68,11 @@ def get_thing(meta_host, par, header=None, session=None):
     t = r.json()
 
     if "t" not in t:
-        raise PyNIVAError(message=f"Could not find metadata for requested parameters {par}", req_args=par, trace_id=trace_id)
+        raise PyNIVAError(
+            message=f"Could not find metadata for requested parameters {par}",
+            req_args=par,
+            trace_id=trace_id,
+        )
     if isinstance(t["t"], list) and len(t["t"]) == 1:
         return t["t"][0]
 
@@ -77,9 +92,14 @@ def path2all_ts(meta_host, path, search_depth=100, session=None):
         A list of time series meta dictionaries
     """
     thing = get_thing(meta_host, {"path": path}, session=session)
-    assert(isinstance(thing, dict) and "uuid" in thing)
-    thing = get_thing(meta_host, {"uuid": thing["uuid"], "parts": search_depth}, session=session)
-    return [get_thing(meta_host, {"uuid": ts["uuid"]}, session=session) for ts in thing_tree2ts(thing)]
+    assert isinstance(thing, dict) and "uuid" in thing
+    thing = get_thing(
+        meta_host, {"uuid": thing["uuid"], "parts": search_depth}, session=session
+    )
+    return [
+        get_thing(meta_host, {"uuid": ts["uuid"]}, session=session)
+        for ts in thing_tree2ts(thing)
+    ]
 
 
 def update_thing(meta_host, thing, header=None, session=None):
@@ -101,7 +121,7 @@ def update_thing(meta_host, thing, header=None, session=None):
     u_thing = update_r.json()
 
     if not "t" in u_thing:
-        logging.error("Was not able to update thing %s" % (thing, ))
+        logging.error("Was not able to update thing %s" % (thing,))
         if "code" in u_thing:
             _msg = "PUT method not avaliable through endpoint"
             logging.error(_msg)
@@ -141,7 +161,7 @@ def delete_thing(meta_host, thing, header=None, session=None):
 def thing_tree2ts(top):
     """Walk a tree of parts and yield all time series objects
     (ttype in [tseries, qctseries, gpstrack])
-    
+
     Args:
         top: Top thing node in the tree
 
