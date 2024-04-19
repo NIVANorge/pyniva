@@ -20,7 +20,7 @@ from .__version__ import __version__
 class PyNIVAError(Exception):
     """Exception wrapper for Thing universe"""
 
-    def __init__(self, message, trace_id, req_args=None):
+    def __init__(self, message, trace_id=None, req_args=None):
         super().__init__(message)
         self.message = message
         self.req_args = req_args
@@ -114,7 +114,7 @@ def token2header(token_file):
     }
 
     token = jwt.encode(payload, cmrsa["private_key"], algorithm="RS256")
-    header = {"Authorization": b"Bearer " + token}
+    header = {"Authorization": b"Bearer " + token.encode("utf-8")}
     return header
 
 

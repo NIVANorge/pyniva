@@ -529,6 +529,12 @@ class GPSTrack(TimeSeries):
     TTYPE = "gpstrack"
     pass
 
+class Spectra(TimeSeries):
+    TTYPE = "spectra"
+    pass
+
+    def get_tseries(self, ts_host, session=None, **kwargs):
+        raise NotImplementedError("Spectra not implemented")
 
 # Dictionary to call individual __init__ functions
 _dispatcher = {
@@ -540,6 +546,7 @@ _dispatcher = {
     "tseries": TimeSeries,
     "qctseries": FlagTimeSeries,
     "gpstrack": GPSTrack,
+    "spectra": Spectra,
 }
 
 _valid_types = [k for k in _dispatcher]
