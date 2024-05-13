@@ -27,7 +27,7 @@ Please make sure that the token is not shared. In case of data breach or lost to
 The package and all it's dependencies can be installed using `pip`
 
 ```
-pip install pyniva
+pip install git+https://github.com/NIVANorge/pyniva.git@master
 ```
 
 ## Contact
