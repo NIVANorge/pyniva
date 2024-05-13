@@ -89,13 +89,14 @@ def get_ship_data(
         if not noqc:
 
             df = df.dropna(subset=["latitude", "longitude"], how="all")
-
+            print(f" downloaded data for {param_paths}")
             # also do not get coordinates if all data columns are empty
             data_cols = [
                 p
                 for p in param_paths
                 if p not in ["time", "latitude", "longitude", f"{vessel_name}/gpstrack"]
-                and "TEST" not in p and if p in df.columns
+                and "TEST" not in p
+                and p in df.columns
             ]
 
             print(f"drop nans")
