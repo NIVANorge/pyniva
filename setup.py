@@ -27,8 +27,8 @@ setup(
     # The project's main homepage.
     url="https://github.com/NIVANorge/pyniva",
     # Author details
-    author="Zofia Rudjord, Elizaveta Protsenko, Kim Leirvik",
-    author_email="elizaveta.protsenko@niva.no, kim.leirvik@niva.no"
+    author="Zofia Rudjord Elizaveta Protsenko Kim Leirvik",
+    author_email="elizaveta.protsenko@niva.no kim.leirvik@niva.no"
     # Choose your license
     license="MIT license",
     # See https://pypi.python.org/pypi?%3Aaction=list_classifiers
