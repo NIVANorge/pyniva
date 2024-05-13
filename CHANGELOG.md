@@ -1,6 +1,8 @@
 # Changelog
 
-
+## 0.5.2
+  tiny log change 
+  
 ## 0.5.1
 - Fix issues with missing parameter querying and add unit tests for new query functions (get_ship_data)
 
