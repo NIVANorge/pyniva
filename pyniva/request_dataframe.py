@@ -73,7 +73,7 @@ def get_ship_data(
 
             if var.empty:
                 print(f"No data for path {path}")
-                param_paths.remove(path)
+                param_paths = param_paths.remove(path)
             elif df.empty:
                 df = var
             else:
@@ -96,7 +96,7 @@ def get_ship_data(
                 if p not in ["time", "latitude", "longitude", f"{vessel_name}/gpstrack"]
                 and "TEST" not in p
             ]
-
+            print(f"drop nans")
             df = df.dropna(subset=data_cols, how="all")
         df = df.sort_values(by="time", ascending=True)
         df = df.reset_index()
