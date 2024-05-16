@@ -58,7 +58,7 @@ def get_ship_data(
         param_paths.append(f"{vessel_name}/gpstrack")
 
     for path in param_paths:
-        print(path)
+        # print(path)
         try:
             tseries_idx = vessel_paths.index(path)
 
@@ -73,7 +73,6 @@ def get_ship_data(
 
             if var.empty:
                 print(f"No data for path {path}")
-                param_paths.remove(path)
             elif df.empty:
                 df = var
             else:
