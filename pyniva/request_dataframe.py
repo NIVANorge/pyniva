@@ -51,7 +51,7 @@ def get_ship_data(
     vessel_signals, vessel_paths = get_paths_measurements(
         vessel_name, meta_host=meta_host, header=header
     )
-
+    print(f"got paths for measurements")
     df = pd.DataFrame()
     # make sure that all datasets have coordinates
     if f"{vessel_name}/gpstrack" not in param_paths:
@@ -89,14 +89,17 @@ def get_ship_data(
         if not noqc:
 
             df = df.dropna(subset=["latitude", "longitude"], how="all")
+            print(f" downloaded data for {param_paths}")
             # also do not get coordinates if all data columns are empty
             data_cols = [
                 p
                 for p in param_paths
                 if p not in ["time", "latitude", "longitude", f"{vessel_name}/gpstrack"]
                 and "TEST" not in p
+                and p in df.columns
             ]
 
+            print(f"drop nans")
             df = df.dropna(subset=data_cols, how="all")
         df = df.sort_values(by="time", ascending=True)
         df = df.reset_index()

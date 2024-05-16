@@ -1,8 +1,16 @@
 # Changelog
 
-## 0.5.0
+## 0.5.3
+  - bugfix
 
-- additional query funciton in request_dataframe.py
+## 0.5.2
+  - tiny log change 
+  
+## 0.5.1
+- Fix issues with missing parameter querying and add unit tests for new query functions (get_ship_data)
+
+## 0.5.0
+additional query function in request_dataframe.py
 - dataframe columns names are paths instead of names
 
 ## 0.4.3
