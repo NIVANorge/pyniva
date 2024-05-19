@@ -56,7 +56,7 @@ def get_ship_data(
     # make sure that all datasets have coordinates
     if f"{vessel_name}/gpstrack" not in param_paths:
         param_paths.append(f"{vessel_name}/gpstrack")
-
+    empty_paths = []
     for path in param_paths:
         # print(path)
         try:
@@ -73,6 +73,8 @@ def get_ship_data(
 
             if var.empty:
                 print(f"No data for path {path}")
+                empty_paths.append(path)
+
             elif df.empty:
                 df = var
             else:
@@ -98,8 +100,12 @@ def get_ship_data(
                 and p in df.columns
             ]
 
-            print(f"drop nans")
-            df = df.dropna(subset=data_cols, how="all")
+            # print(f"drop nans")
+            # df = df.dropna(subset=data_cols, how="all")
+            # keep columns with nans
         df = df.sort_values(by="time", ascending=True)
         df = df.reset_index()
+        # add columns from empty paths and fill with nans
+        for path in empty_paths:
+            df[path] = None
     return df
