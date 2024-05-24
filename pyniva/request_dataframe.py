@@ -51,7 +51,7 @@ def get_ship_data(
     vessel_signals, vessel_paths = get_paths_measurements(
         vessel_name, meta_host=meta_host, header=header
     )
-    print(f"got paths for measurements")
+
     df = pd.DataFrame()
     # make sure that all datasets have coordinates
     if f"{vessel_name}/gpstrack" not in param_paths:
