@@ -175,5 +175,5 @@ def thing_tree2ts(top):
         for t in top["parts"]:
             for ct in thing_tree2ts(t):
                 yield ct
-    if top.get("ttype") in ["tseries", "qctseries", "gpstrack"]:
+    if top.get("ttype") in ["tseries", "qctseries", "gpstrack", "spectra"]:
         yield top
