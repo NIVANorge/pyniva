@@ -215,8 +215,10 @@ def get_ramses_data(
 
     #slide in 12 h slices
     period =timedelta(hours=12)
+    periods = 1
     if (end_datetime-start_datetime)>period:
         periods = int((end_datetime-start_datetime)/period)
+
 
     start_times = [t.strftime('%Y-%m-%dT%H:%M:%S') for t in [start_datetime+i*period for i in range(0,periods)]]
     end_times = [t.strftime('%Y-%m-%dT%H:%M:%S') for t in [start_datetime+i*period for i in range(1,periods)]]
