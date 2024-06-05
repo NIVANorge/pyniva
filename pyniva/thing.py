@@ -533,8 +533,8 @@ class Spectra(TimeSeries):
     TTYPE = "spectra"
     pass
 
-    def get_tseries(self, ts_host, session=None, **kwargs):
-        raise NotImplementedError("Spectra not implemented")
+    # def get_tseries(self, ts_host, session=None, **kwargs):
+    #     raise NotImplementedError("Spectra not implemented")
 
 # Dictionary to call individual __init__ functions
 _dispatcher = {
