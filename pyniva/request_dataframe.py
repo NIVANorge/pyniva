@@ -214,7 +214,7 @@ def get_ramses_data(
     end_datetime=datetime.strptime(end_time, "%Y-%m-%dT%H:%M:%S")
 
     #slide in 12 h slices
-    period =timedelta(hours=12)
+    period = timedelta(hours=12)
     periods = 1
     if (end_datetime-start_datetime)>period:
         periods = int((end_datetime-start_datetime)/period)

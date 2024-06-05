@@ -4,6 +4,7 @@ from pyniva.request_dataframe import (
     get_ship_data,
     get_available_parameters,
     get_paths_measurements,
+    get_ramses_data
 )
 from pyniva import token2header
 import logging
@@ -55,3 +56,27 @@ def test_get_paths_measurements():
     )
 
     assert "FA/FERRYBOX/C3/CDOM_FLUORESCENCE/RAW/FROZEN_TEST" in tseries_paths
+
+
+@pytest.mark.system
+def test_get_ramses_data():
+    header = token2header("tests/niva-service-account.json")
+    param_paths = [
+        "FA/RAMSES/DERIVED/RRS/CALIBRATED",
+        "FA/RAMSES/DERIVED/PAR/CALIBRATED",
+    ]
+    start_time = "2023-07-14T00:00:00"
+    end_time = "2023-07-14T00:05:00"
+    t = get_ramses_data(
+        vessel_name="FA",
+        param_paths=param_paths,
+        start_time=start_time,
+        end_time=end_time,
+        noqc=False,
+        header=header,
+        dt=0,
+        pub_tsb="https://ferrybox.p.niva.no/v1/tsb",
+        meta_host="https://ferrybox.p.niva.no/v1/metaflow",
+    )
+
+    assert not t.empty
