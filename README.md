@@ -10,7 +10,7 @@ Currently the following parts/APIs are supported:
 
 ## Getting access
 
-The API is protected with API tokens. Please contact cloud@niva.no to request access.
+The API is protected with API tokens. Please contact miljoinformatikk@niva.no to request access.
 
 When provided with a token, all pyniva invokations need to include a header object:
 
