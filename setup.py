@@ -15,6 +15,11 @@ with open(path.join(here, "pyniva", "__version__.py")) as f:
 with open(path.join(here, "README.md"), encoding="utf-8") as f:
     long_description = f.read()
 
+# Read the requirements from the requirements.txt file
+with open(path.join(here, "requirements.txt")) as f:
+    install_requires = f.read().splitlines()
+
+
 setup(
     name="pyniva",
     # Versions should comply with PEP440.  For a discussion on single-sourcing
@@ -37,7 +42,7 @@ setup(
         #   3 - Alpha
         #   4 - Beta
         #   5 - Production/Stable
-        "Development Status :: 3 - Alpha",
+        "Development Status :: 3 - Alpha",    install_requires=install_requires,
         # Indicate who your project is intended for
         "Intended Audience :: Developers",
         "Programming Language :: Python :: 3",
@@ -48,4 +53,5 @@ setup(
     keywords="metadata timeseries data",
     packages=find_packages(exclude=["contrib", "docs", "tests"]),
     test_suite="tests",
+    install_requires=install_requires,
 )
