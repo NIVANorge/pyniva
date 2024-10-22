@@ -32,7 +32,7 @@ pip install git+https://github.com/NIVANorge/pyniva.git@master
 
 ## Contact
 
-If you have any questions or feedback, please contact us at cloud@niva.no
+If you have any questions or feedback, please contact us at miljoinfomatikk@niva.no
 
 ## General information
 
