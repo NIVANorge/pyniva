@@ -489,7 +489,7 @@ class TimeSeries(Thing):
         Returns:
             A Pandas DataFrame with the timeseries
         """
-        print (ts_host)
+        print (f"get_tseries {ts_host}")
         return self.get_timeseries_list(
             ts_host,
             [
@@ -499,6 +499,8 @@ class TimeSeries(Thing):
             session=session,
             **kwargs,
         )
+    
+    
     def  get_tseries_list_dates(self, ts_host, session=None, **kwargs):
         """Metod for querying a time series from the tsb backend
         For further details about query parameters etc. see
@@ -559,8 +561,7 @@ class Spectra(TimeSeries):
     TTYPE = "spectra"
     pass
 
-    # def get_tseries(self, ts_host, session=None, **kwargs):
-    #     raise NotImplementedError("Spectra not implemented")
+
 
 # Dictionary to call individual __init__ functions
 _dispatcher = {
