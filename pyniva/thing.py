@@ -488,6 +488,31 @@ class TimeSeries(Thing):
         Returns:
             A Pandas DataFrame with the timeseries
         """
+        print (ts_host)
+        return self.get_timeseries_list(
+            ts_host,
+            [
+                self,
+            ],
+            name_headers=True,
+            session=session,
+            **kwargs,
+        )
+    def  get_tseries_list_dates(self, ts_host, session=None, **kwargs):
+        """Metod for querying a time series from the tsb backend
+        For further details about query parameters etc. see
+        'pyniva' documentation.
+
+        Params:
+           ts_host (str): URL for time series backend (tsb)
+           session:       Requests session object
+           **kwargs:      Keyword arguments for the query, see 'pyniva' documentation for
+                          further details.
+        Returns:
+            A Pandas DataFrame with the timeseries
+        """
+        print (ts_host)
+
         return self.get_timeseries_list(
             ts_host,
             [
