@@ -60,7 +60,6 @@ def get_ship_data(
         param_paths.append(f"{vessel_name}/gpstrack")
     empty_paths = []
     for path in param_paths:
-        # print(path)
         try:
             tseries_idx = vessel_paths.index(path)
 
