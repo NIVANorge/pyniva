@@ -111,11 +111,10 @@ def get_ship_data(
             df[path] = None
     return df
 
+
 def get_ship_data_list_of_dates(
     vessel_name: str,
     param_paths: list,
-    start_time,
-    end_time,
     noqc,
     header,
     dt=0,
@@ -184,6 +183,8 @@ def get_ship_data_list_of_dates(
         for path in empty_paths:
             df[path] = None
     return df
+
+
 def get_ramses_time_slice(              
             vessel_name: str, 
             param_paths: list,
