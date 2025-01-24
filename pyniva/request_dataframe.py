@@ -112,7 +112,7 @@ def get_ship_data(
     return df
 
 
-def get_ship_data_list_of_dates(
+def get_data_discrete_dates(
     vessel_name: str,
     param_paths: list,
     noqc,
@@ -122,67 +122,8 @@ def get_ship_data_list_of_dates(
     meta_host=PUB_META,
 ):
     print("Downloading data for ", vessel_name)
-
-    vessel_signals, vessel_paths = get_paths_measurements(
-        vessel_name, meta_host=meta_host, header=header
-    )
-
-    df = pd.DataFrame()
-    # make sure that all datasets have coordinates
-    if f"{vessel_name}/gpstrack" not in param_paths:
-        param_paths.append(f"{vessel_name}/gpstrack")
-    empty_paths = []
-    for path in param_paths:
-        try:
-            tseries_idx = vessel_paths.index(path)
-
-            var = vessel_signals[tseries_idx].get_tseries_list_dates(
-                pub_tsb,
-                header=header,
-                noqc=noqc,
-                dt=dt,
-                #start_time=start_time,
-                #end_time=end_time,
-            )
-
-            if var.empty:
-                print(f"No data for path {path}")
-                empty_paths.append(path)
-
-            elif df.empty:
-                df = var
-            else:
-                df = df.merge(var, on="time", how="outer")
-
-        except Exception as e:
-            print(f"could not download {path, e}")
-
-    if df.empty:
-        print("Nothing was downloaded")
-    else:
-
-        if not noqc:
-
-            df = df.dropna(subset=["latitude", "longitude"], how="all")
-            print(f" downloaded data for {param_paths}")
-            # also do not get coordinates if all data columns are empty
-            data_cols = [
-                p
-                for p in param_paths
-                if p not in ["time", "latitude", "longitude", f"{vessel_name}/gpstrack"]
-                and "TEST" not in p
-                and p in df.columns
-            ]
-
-            # print(f"drop nans")
-            # df = df.dropna(subset=data_cols, how="all")
-            # keep columns with nans
-        df = df.sort_values(by="time", ascending=True)
-        df = df.reset_index()
-        # add columns from empty paths and fill with nans
-        for path in empty_paths:
-            df[path] = None
-    return df
+    print ("Test")
+    return None
 
 
 def get_ramses_time_slice(              

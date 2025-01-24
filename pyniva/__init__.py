@@ -4,7 +4,7 @@ from .get_data import token2header, PyNIVAError, get_newly_inserted_data
 from .request_dataframe import (
     get_paths_measurements,
     get_ship_data,
-    get_ship_data_list_of_dates,
+    get_data_discrete_dates,
     get_available_parameters,
 )
 from .tsb import TSB_HOST, PUB_TSB
@@ -28,6 +28,6 @@ __all__ = [
     "get_newly_inserted_data",
     "get_paths_measurements",
     "get_ship_data",
-    "get_ship_data_list_of_dates",
+    "get_data_discrete_dates",
     "get_available_parameters",
 ]

@@ -2,6 +2,7 @@ import pytest
 import pyniva
 from pyniva.request_dataframe import (
     get_ship_data,
+    get_data_discrete_dates,
     get_available_parameters,
     get_paths_measurements,
     get_ramses_data
