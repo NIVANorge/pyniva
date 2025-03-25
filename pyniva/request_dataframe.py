@@ -28,12 +28,15 @@ def get_paths_measurements(vessel_name, header, meta_host=PUB_META):
     return vessel_signals, tseries_paths
 
 
-def get_available_parameters(platform_code, header, meta_host=None, exclude_tests=True):
+def get_available_parameters(platform_code, header, meta_host=PUB_META, exclude_tests=True):
     measurements, tseries_paths = get_paths_measurements(
         platform_code, header, meta_host
     )
     if exclude_tests:
         available_paths = [p for p in tseries_paths if "TEST" not in p]
+    else:
+        available_paths = tseries_paths
+
     return available_paths
 
 
