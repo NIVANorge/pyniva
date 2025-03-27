@@ -126,7 +126,8 @@ def get_data_discrete_dates(
 ):
     print("Downloading data for ", vessel_name)
     print ("Test")
-    return None
+    raise NotImplementedError("This function is not implemented yet")
+
 
 
 def get_ramses_time_slice(              

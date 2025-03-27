@@ -514,7 +514,6 @@ class TimeSeries(Thing):
         Returns:
             A Pandas DataFrame with the timeseries
         """
-        print (ts_host)
 
         return self.get_timeseries_list(
             ts_host,
