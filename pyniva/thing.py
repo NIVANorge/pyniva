@@ -456,7 +456,7 @@ class TimeSeries(Thing):
         Returns:
             A Pandas DataFrame with the timeseries
         """
-        print (f'get_timeseries_list: {ts_host}')
+        
         if isinstance(timeseries, TimeSeries):
             uuid_list = [
                 timeseries.uuid,
@@ -489,7 +489,7 @@ class TimeSeries(Thing):
         Returns:
             A Pandas DataFrame with the timeseries
         """
-        print (f"get_tseries {ts_host}")
+        
         return self.get_timeseries_list(
             ts_host,
             [
