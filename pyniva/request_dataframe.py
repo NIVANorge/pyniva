@@ -28,12 +28,15 @@ def get_paths_measurements(vessel_name, header, meta_host=PUB_META):
     return vessel_signals, tseries_paths
 
 
-def get_available_parameters(platform_code, header, meta_host=None, exclude_tests=True):
+def get_available_parameters(platform_code, header, meta_host=PUB_META, exclude_tests=True):
     measurements, tseries_paths = get_paths_measurements(
         platform_code, header, meta_host
     )
     if exclude_tests:
         available_paths = [p for p in tseries_paths if "TEST" not in p]
+    else:
+        available_paths = tseries_paths
+
     return available_paths
 
 
@@ -60,7 +63,6 @@ def get_ship_data(
         param_paths.append(f"{vessel_name}/gpstrack")
     empty_paths = []
     for path in param_paths:
-        # print(path)
         try:
             tseries_idx = vessel_paths.index(path)
 
@@ -111,6 +113,22 @@ def get_ship_data(
         for path in empty_paths:
             df[path] = None
     return df
+
+
+def get_data_discrete_dates(
+    vessel_name: str,
+    param_paths: list,
+    noqc,
+    header,
+    dt=0,
+    pub_tsb=PUB_TSB,
+    meta_host=PUB_META,
+):
+    print("Downloading data for ", vessel_name)
+    print ("Test")
+    raise NotImplementedError("This function is not implemented yet")
+
+
 
 def get_ramses_time_slice(              
             vessel_name: str, 

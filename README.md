@@ -32,7 +32,41 @@ pip install git+https://github.com/NIVANorge/pyniva.git@master
 
 ## Contact
 
-If you have any questions or feedback, please contact us at cloud@niva.no
+If you have any questions or feedback, please contact us at miljoinfomatikk@niva.no
+
+
+
+## Quick Start, How to get the data /Examples
+
+Check example notebook in the `examples` folder.
+
+Create a header object with your personal access token:
+
+```python
+from pyniva import Vessel, PUB_META, token2header
+header = token2header("path/to/my/tokenfile.json")
+```
+
+
+print all available to you paths with :
+
+```python
+available_paths = pyniva.get_available_parameters(platform_code='RW',header = header, meta_host = PUB_META, exclude_tests=True)
+```
+
+Request data for specific paths:
+
+```python
+platform_code = 'RW'
+start_time = "2025-02-01T00:00:00"
+end_time = "2025-03-09T16:00:00"
+paths_to_download = [
+    'RW/FERRYBOX/SBE45/SALINITY/RAW','RW/INLET/SBE38/TEMPERATURE/RAW']  
+fb_data = pyniva.get_ship_data(platform_code, paths_to_download, start_time, end_time, noqc=True, header = header)
+```
+
+Done, now you can plot, save, visualize or analyze the data.
+
 
 ## General information
 
@@ -169,7 +203,9 @@ FA/GPS
 
 Note that the `thing` instance have to be present in `metaflow`.
 
-### Examples
+
+
+## More examples
 
 ```python
 # Get list of available vessels in metaflow, print their names

@@ -104,3 +104,4 @@ your-service-account.json
 .idea
 tests/niva-service-account.json
 .vscode
+examples/niva-service-account.json

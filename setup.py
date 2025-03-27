@@ -2,7 +2,6 @@
 """A setuptools based module for the NIVA tsb module/application.
 """
 from os import path
-
 from setuptools import setup, find_packages
 
 here = path.abspath(path.dirname(__file__))
@@ -14,6 +13,10 @@ with open(path.join(here, "pyniva", "__version__.py")) as f:
 
 with open(path.join(here, "README.md"), encoding="utf-8") as f:
     long_description = f.read()
+
+# Read the requirements from the requirements.txt file
+with open(path.join(here, "requirements.txt")) as f:
+    install_requires = f.read().splitlines()
 
 setup(
     name="pyniva",
@@ -48,4 +51,5 @@ setup(
     keywords="metadata timeseries data",
     packages=find_packages(exclude=["contrib", "docs", "tests"]),
     test_suite="tests",
+    install_requires=install_requires,
 )
