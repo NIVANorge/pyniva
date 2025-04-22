@@ -1,5 +1,18 @@
 # Python wrapper for NIVA's Data Platform
 
+Install the package using Poetry:
+
+## Table of Contents
+- [Introduction](#introduction)
+- [Getting Access](#getting-access)
+- [Installation](#installation)
+- [Quick Start](#quick-start)
+- [General Information](#general-information)
+- [Examples](#examples)
+- [Contact](#contact)
+
+## Introduction
+
 `pyniva` is a Python library and API wrapper(s) for programatic access to data
 in NIVA's data platform and services.
 
@@ -24,12 +37,24 @@ Please make sure that the token is not shared. In case of data breach or lost to
 
 ## Installation
 
-The package and all it's dependencies can be installed using `pip`
+Install the package using Poetry:
+
+```bash
+poetry add pyniva
+```
+
+Or install directly from the repository:
 
 ```
 pip install git+https://github.com/NIVANorge/pyniva.git@master
 ```
 
+or 
+
+```
+poetry add git+https://github.com/NIVANorge/pyniva.git@master
+
+```
 ## Contact
 
 If you have any questions or feedback, please contact us at miljoinfomatikk@niva.no
