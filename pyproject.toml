@@ -1,9 +1,16 @@
 [tool.poetry]
 name = "pyniva"
 version = "0.6.15"
-description = ""
-authors = ["lisapro <elisaveta.pro@gmail.com>"]
+description="Python wrapper/API for interacting with NIVA's data platform"
+authors = ["Zofia Rudjord", "Elizaveta Protsenko <elizaveta.protsenko@niva.no>", "Kim Leirvik <kim.leirvik@niva.no>"]
 readme = "README.md"
+license="MIT license"
+homepage = "https://github.com/NIVANorge/pyniva"
+keywords = ["metadata", "timeseries", "data"]
+classifiers = [
+    "Development Status :: 3 - Alpha",
+    "Intended Audience :: Developers, Researchers",
+]
 
 [tool.poetry.dependencies]
 python = "^3.10"
@@ -14,6 +21,8 @@ pyjwt = "2.8.0"
 cryptography = "^43.0.1"
 setuptools = "^79.0.0"
 
+[tool.poetry.dev-dependencies]
+pytest = "^7.4.2"
 
 [build-system]
 requires = ["poetry-core"]
