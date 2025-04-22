@@ -3,14 +3,10 @@
 """
 Script to read time series tsb backend
 """
-import sys
-import logging
 from datetime import datetime, timedelta
 import numpy as np
 import time
-import re
-from dateutil.parser import parse
-from .thing import Vessel, TimeSeries
+from .thing import Vessel
 from .metaflow import PUB_META
 from .tsb import PUB_TSB
 import pandas as pd

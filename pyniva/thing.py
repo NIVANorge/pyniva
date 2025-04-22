@@ -100,7 +100,7 @@ class Thing:
             thing_meta = _dispatcher[thing_data["ttype"]](thing_data)
         else:
             raise ThingError(
-                "Unknown data type passed, must be a dictionary or a list of dictionarise"
+                "Unknown data type passed, must be a dictionary or a list of dictionaries"
             )
         return thing_meta
 
