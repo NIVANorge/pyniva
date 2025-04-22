@@ -1,0 +1,20 @@
+[tool.poetry]
+name = "pyniva"
+version = "0.6.15"
+description = ""
+authors = ["lisapro <elisaveta.pro@gmail.com>"]
+readme = "README.md"
+
+[tool.poetry.dependencies]
+python = "^3.10"
+pandas = ">=2.0"
+numpy = "2.0.0"
+requests = "^2.24.0"
+pyjwt = "2.8.0"
+cryptography = "41.0.4"
+setuptools = "^79.0.0"
+
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
