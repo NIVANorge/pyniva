@@ -14,8 +14,8 @@ import requests
 import jwt
 import io
 
-from .__version__ import __version__
-
+from importlib.metadata import version
+__version__ = version("pyniva")
 
 class PyNIVAError(Exception):
     """Exception wrapper for Thing universe"""
@@ -41,12 +41,12 @@ def validate_query_parameters(**params):
         )
 
 
-def get_data(url, params=None, headers=None, session=None):
+def get_data(url: str, params: dict=None, headers: dict =None, session: requests.Session=None):
     """Get data from NIVA REST endpoints
 
     Params:
        url (str):         The address of the rest endpoint
-       params (dict):     Dictionary with query parameters
+       params (dict or None): Dictionary with query parameters or None
        headers (dict):    Header data for the request, must include JWT access token
        session (Session): Requests session object
 
