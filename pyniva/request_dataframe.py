@@ -158,32 +158,6 @@ def get_ramses_time_slice(
     df = df.reset_index()
     df = df.pivot(index = "time", columns="wl", values="value") 
 
-    # then get gps data
-    print(f"Downloading gps track")
-    path = f"{vessel_name}/gpstrack"
-    gps_index = vessel_paths.index(path)
-    gps_data = vessel_signals[gps_index].get_tseries(
-                    pub_tsb,
-                    header=header,
-                    noqc=noqc,
-                    dt=dt,
-                    start_time=start_time,
-                    end_time=end_time,
-    )
-
-    # inperpolate gps data to match ramses
-    print(f"Interpolating gps track to ramses frequency")
-    gps_data = gps_data.sort_values(by="time", ascending=True)
-    gps_data = gps_data.reset_index()
-    datetime_ramses = list(set([time.mktime(datetime.strptime(str(v), "%Y-%m-%d %H:%M:%S").timetuple()) for v in list(df.index)]))
-    gps_datetime = [time.mktime(datetime.strptime(str(v), "%Y-%m-%d %H:%M:%S").timetuple()) for v in list(gps_data["time"])]
-    longitude = list(gps_data["longitude"])
-    latitude = list(gps_data["latitude"])
-    longitude_interp = np.interp(datetime_ramses, gps_datetime, longitude)
-    latitude_interp = np.interp(datetime_ramses, gps_datetime, latitude)
-    df["longitude"] = longitude_interp
-    df["latitude"] = latitude_interp
-
     # add other ramses data
     for path in param_paths:
         if path in spectral_paths:
