@@ -66,8 +66,8 @@ def test_get_ramses_data():
         "FA/RAMSES/DERIVED/RRS/CALIBRATED",
         "FA/RAMSES/DERIVED/PAR/CALIBRATED",
     ]
-    start_time = "2023-07-14T00:00:00"
-    end_time = "2023-07-14T00:05:00"
+    start_time = "2023-07-11T13:01:00"
+    end_time = "2023-07-11T13:05:00"
     t = get_ramses_data(
         vessel_name="FA",
         param_paths=param_paths,
