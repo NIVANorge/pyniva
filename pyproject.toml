@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "pyniva"
-version = "0.6.15"
+version = "0.6.17"
 description="Python wrapper/API for interacting with NIVA's data platform"
 authors = ["Zofia Rudjord", "Elizaveta Protsenko <elizaveta.protsenko@niva.no>", "Kim Leirvik <kim.leirvik@niva.no>"]
 readme = "README.md"
