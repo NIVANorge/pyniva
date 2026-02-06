@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "pyniva"
-version = "0.6.17"
+version = "0.6.18"
 description="Python wrapper/API for interacting with NIVA's data platform"
 authors = ["Zofia Rudjord", "Elizaveta Protsenko <elizaveta.protsenko@niva.no>", "Kim Leirvik <kim.leirvik@niva.no>"]
 readme = "README.md"
@@ -15,7 +15,7 @@ classifiers = [
 [tool.poetry.dependencies]
 python = ">=3.11,<3.14"
 pandas = ">=3.0"
-numpy = "2.4.0"
+numpy = ">=2.3.0"
 requests = "^2.24.0"
 pyjwt = "2.8.0"
 cryptography = ">=43.0.1,<45.0.0"
