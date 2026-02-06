@@ -13,15 +13,15 @@ classifiers = [
 ]
 
 [tool.poetry.dependencies]
-python = "^3.10"
-pandas = ">=2.0"
-numpy = "2.0.0"
+python = ">=3.11,<3.14"
+pandas = ">=3.0"
+numpy = "2.4.0"
 requests = "^2.24.0"
 pyjwt = "2.8.0"
 cryptography = ">=43.0.1,<45.0.0"
 setuptools = "^79.0.0"
 
-[tool.poetry.dev-dependencies]
+[tool.poetry.group.dev.dependencies]
 pytest = "^7.4.2"
 
 [build-system]
