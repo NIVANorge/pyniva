@@ -18,7 +18,7 @@ pandas = ">=3.0"
 numpy = ">=2.3.0"
 requests = "^2.24.0"
 pyjwt = "2.8.0"
-cryptography = ">=43.0.1,<45.0.0"
+cryptography = ">=43.0.1,<47.0.0"
 setuptools = "^79.0.0"
 
 [tool.poetry.group.dev.dependencies]
