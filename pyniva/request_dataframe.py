@@ -24,7 +24,9 @@ def get_paths_measurements(vessel_name, header, meta_host=PUB_META):
     return vessel_signals, tseries_paths
 
 
-def get_available_parameters(platform_code, header, meta_host=PUB_META, exclude_tests=True):
+def get_available_parameters(
+    platform_code, header, meta_host=PUB_META, exclude_tests=True
+):
     measurements, tseries_paths = get_paths_measurements(
         platform_code, header, meta_host
     )
@@ -121,61 +123,64 @@ def get_data_discrete_dates(
     meta_host=PUB_META,
 ):
     print("Downloading data for ", vessel_name)
-    print ("Test")
+    print("Test")
     raise NotImplementedError("This function is not implemented yet")
 
 
+def get_ramses_time_slice(
+    vessel_name: str,
+    param_paths: list,
+    spectral_paths: list,
+    vessel_paths: list,
+    vessel_signals: list,
+    start_time,
+    end_time,
+    noqc,
+    header,
+    dt=0,
+    pub_tsb=PUB_TSB,
+):
 
-def get_ramses_time_slice(              
-            vessel_name: str, 
-            param_paths: list,
-            spectral_paths: list, 
-            vessel_paths: list,
-            vessel_signals: list,
-            start_time,
-            end_time,
-            noqc,
-            header,
-            dt=0,
-            pub_tsb=PUB_TSB):
-    
     # get spectral data
     # first get spectral data
-    print(f"Downloading spectral data {spectral_paths[0]} times {start_time} to {end_time}")
+    print(
+        f"Downloading spectral data {spectral_paths[0]} times {start_time} to {end_time}"
+    )
     df = pd.DataFrame()
     tseries_idx = vessel_paths.index(spectral_paths[0])
     df = vessel_signals[tseries_idx].get_tseries(
-                    pub_tsb,
-                    header=header,
-                    noqc=noqc,
-                    dt=dt,
-                    start_time=start_time,
-                    end_time=end_time)
+        pub_tsb,
+        header=header,
+        noqc=noqc,
+        dt=dt,
+        start_time=start_time,
+        end_time=end_time,
+    )
     if df.empty:
         print(f"No ramses data found for path {spectral_paths[0]}")
         return df
     df = df.sort_values(by="time", ascending=True)
     df = df.reset_index()
-    df = df.pivot(index = "time", columns="wl", values="value") 
+    df = df.pivot(index="time", columns="wl", values="value")
 
     # add other ramses data
     for path in param_paths:
         if path in spectral_paths:
-                continue
+            continue
         if "RAMSES" not in path:
             print(f"ship data needs to be downloaded separately. Skipping {path}")
-            continue            
-        print(f"Add {path} to spectral profile")    
+            continue
+        print(f"Add {path} to spectral profile")
         tseries_idx = vessel_paths.index(path)
         var = vessel_signals[tseries_idx].get_tseries(
-                    pub_tsb,
-                    header=header,
-                    noqc=noqc,
-                    dt=dt,
-                    start_time=start_time,
-                    end_time=end_time,
-            )
-        df = df.merge(var, on="time", how="outer")        
+            pub_tsb,
+            header=header,
+            noqc=noqc,
+            dt=dt,
+            start_time=start_time,
+            end_time=end_time,
+        )
+        df = df.merge(var, on="time", how="outer")
     return df
 
 
@@ -195,31 +200,41 @@ def get_ramses_data(
     vessel_signals, vessel_paths = get_paths_measurements(
         vessel_name, meta_host=meta_host, header=header
     )
-    spectral_paths = [path for path in param_paths if vessel_signals[vessel_paths.index(path)].TTYPE=="spectra"]
-    assert len(spectral_paths)==1, "Only one spectral profile can be downloaded at a time"
+    spectral_paths = [
+        path
+        for path in param_paths
+        if vessel_signals[vessel_paths.index(path)].TTYPE == "spectra"
+    ]
+    assert (
+        len(spectral_paths) == 1
+    ), "Only one spectral profile can be downloaded at a time"
 
-    start_datetime=datetime.strptime(start_time, "%Y-%m-%dT%H:%M:%S")
-    end_datetime=datetime.strptime(end_time, "%Y-%m-%dT%H:%M:%S")
+    start_datetime = datetime.strptime(start_time, "%Y-%m-%dT%H:%M:%S")
+    end_datetime = datetime.strptime(end_time, "%Y-%m-%dT%H:%M:%S")
 
-    #slide in 12 h slices
+    # slide in 12 h slices
     period = timedelta(hours=12)
     periods = 1
-    if (end_datetime-start_datetime)>period:
-        periods = int((end_datetime-start_datetime)/period)
+    if (end_datetime - start_datetime) > period:
+        periods = int((end_datetime - start_datetime) / period)
 
-
-    start_times = [t.strftime('%Y-%m-%dT%H:%M:%S') for t in [start_datetime+i*period for i in range(0,periods)]]
-    end_times = [t.strftime('%Y-%m-%dT%H:%M:%S') for t in [start_datetime+i*period for i in range(1,periods)]]
+    start_times = [
+        t.strftime("%Y-%m-%dT%H:%M:%S")
+        for t in [start_datetime + i * period for i in range(0, periods)]
+    ]
+    end_times = [
+        t.strftime("%Y-%m-%dT%H:%M:%S")
+        for t in [start_datetime + i * period for i in range(1, periods)]
+    ]
     end_times.append(end_time)
 
-   
     df = pd.DataFrame()
     for start_time, end_time in zip(start_times, end_times):
         print(f"Downloading data for {start_time} to {end_time}")
-        df_slice =get_ramses_time_slice(              
-            vessel_name, 
+        df_slice = get_ramses_time_slice(
+            vessel_name,
             param_paths,
-            spectral_paths, 
+            spectral_paths,
             vessel_paths,
             vessel_signals,
             start_time,
@@ -227,10 +242,11 @@ def get_ramses_data(
             noqc,
             header,
             dt=0,
-            pub_tsb=PUB_TSB)
+            pub_tsb=PUB_TSB,
+        )
         if df.empty:
             df = df_slice
         else:
             df = pd.concat([df, df_slice])
-    
+
     return df

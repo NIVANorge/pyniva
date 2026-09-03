@@ -15,7 +15,9 @@ import jwt
 import io
 
 from importlib.metadata import version
+
 __version__ = version("pyniva")
+
 
 class PyNIVAError(Exception):
     """Exception wrapper for Thing universe"""
@@ -41,7 +43,12 @@ def validate_query_parameters(**params):
         )
 
 
-def get_data(url: str, params: dict=None, headers: dict =None, session: requests.Session=None):
+def get_data(
+    url: str,
+    params: dict = None,
+    headers: dict = None,
+    session: requests.Session = None,
+):
     """Get data from NIVA REST endpoints
 
     Params:

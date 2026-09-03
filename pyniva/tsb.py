@@ -34,11 +34,15 @@ def ts_list2df(ts_dict_list):
              must contain a timestamp (key = time)
     Returns:
         Time indexed pandas dictionary with data in list
-    """ 
-    assert(len(ts_dict_list) > 0)
+    """
+    assert len(ts_dict_list) > 0
     keys_set = set([k for rd in ts_dict_list for k in rd.keys()])
-    assert("time" in keys_set)
-    data_dict = OrderedDict([("time", []),])
+    assert "time" in keys_set
+    data_dict = OrderedDict(
+        [
+            ("time", []),
+        ]
+    )
     if "longitude" in keys_set and "latitude" in keys_set:
         data_dict["longitude"] = []
         data_dict["latitude"] = []
@@ -58,7 +62,6 @@ def ts_list2df(ts_dict_list):
     df["time"] = pd.to_datetime(df["time"])
     df.set_index("time", inplace=True)
     return df
-
 
 
 # Helper to get data frames with time series data
@@ -81,7 +84,7 @@ def get_signals(signals_url, uuids, session=None, **kwargs):
        agg_type (str):        Signal aggregation function, possible values:
                               "avg" (default), "min", "max", "sum", "count",
                               "stddev", "mode", "median"
-       uuid_lookup (dict):    Lookup table with meta data for the passed uuids 
+       uuid_lookup (dict):    Lookup table with meta data for the passed uuids
        headers (dict):        Header data for the request towards NIVA public endpoint,
                               must include JWT access token (internal endpoint requires no
                               header)
@@ -90,7 +93,6 @@ def get_signals(signals_url, uuids, session=None, **kwargs):
        A Pandas DataFrame with the data returned
        If no data is returned an empty DataFrame is returned.
     """
-    
 
     header = kwargs.get("header")
     if "header" in kwargs:
@@ -106,7 +108,7 @@ def get_signals(signals_url, uuids, session=None, **kwargs):
     if "end_time" in kwargs:
         if isinstance(kwargs["end_time"], str):
             kwargs["end_time"] = parse(kwargs["end_time"])
-        params["end"] =  kwargs["end_time"].isoformat()
+        params["end"] = kwargs["end_time"].isoformat()
         del kwargs["end_time"]
     for k, v in kwargs.items():
         params[k] = v
