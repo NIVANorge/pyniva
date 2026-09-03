@@ -24,6 +24,7 @@ import os
 import logging
 
 from importlib.metadata import version
+
 __version__ = version("pyniva")
 
 from .get_data import PyNIVAError

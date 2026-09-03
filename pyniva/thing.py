@@ -456,7 +456,7 @@ class TimeSeries(Thing):
         Returns:
             A Pandas DataFrame with the timeseries
         """
-        
+
         if isinstance(timeseries, TimeSeries):
             uuid_list = [
                 timeseries.uuid,
@@ -489,7 +489,7 @@ class TimeSeries(Thing):
         Returns:
             A Pandas DataFrame with the timeseries
         """
-        
+
         return self.get_timeseries_list(
             ts_host,
             [
@@ -499,9 +499,8 @@ class TimeSeries(Thing):
             session=session,
             **kwargs,
         )
-    
-    
-    def  get_tseries_list_dates(self, ts_host, session=None, **kwargs):
+
+    def get_tseries_list_dates(self, ts_host, session=None, **kwargs):
         """Metod for querying a time series from the tsb backend
         For further details about query parameters etc. see
         'pyniva' documentation.
@@ -556,10 +555,10 @@ class GPSTrack(TimeSeries):
     TTYPE = "gpstrack"
     pass
 
+
 class Spectra(TimeSeries):
     TTYPE = "spectra"
     pass
-
 
 
 # Dictionary to call individual __init__ functions

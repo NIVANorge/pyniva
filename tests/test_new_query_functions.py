@@ -5,7 +5,7 @@ from pyniva.request_dataframe import (
     get_data_discrete_dates,
     get_available_parameters,
     get_paths_measurements,
-    get_ramses_data
+    get_ramses_data,
 )
 from pyniva import token2header
 import logging
