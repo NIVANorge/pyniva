@@ -7,6 +7,7 @@ Install the package using Poetry:
 - [Getting Access](#getting-access)
 - [Installation](#installation)
 - [Quick Start](#quick-start)
+- [Understanding Signal Paths](#understanding-signal-paths)
 - [General Information](#general-information)
 - [Examples](#examples)
 - [Contact](#contact)
@@ -92,6 +93,41 @@ fb_data = pyniva.get_ship_data(platform_code, paths_to_download, start_time, end
 
 Done, now you can plot, save, visualize or analyze the data.
 
+## Understanding signal paths
+
+Every signal (time series) is identified internally by a UUID, but for humans each one also has a readable path, structured as:
+
+`[platform_code]/[sensor_group]/[instrument_name]/[parameter_name]/[level]`
+
+For example, in `OC/FERRYBOX/C6/CHLA_FLUORESCENCE/ADJUSTED`: the platform is `OC` (Viking Octantis), the sensor group is `FERRYBOX` (sensor installed in the ferrybox cabinet), the instrument is `C6`, the parameter is `CHLA_FLUORESCENCE`, and the level is `ADJUSTED`.
+
+### Platform codes
+
+Short name of the vessel, e.g. `FA`, `NB`, `TF`, `RW`, `RA`, `OC`, `PO`.
+
+### Sensor groups
+
+| sensor group | description |
+|:--------|:-------------|
+| INLET | sensor (normally a CTD probe) installed at the inlet, considered in-situ and the least disturbed values |
+| FERRYBOX | parameters from sensors installed within the ferrybox cabinet |
+| GPSTRACK | position, calculated from lat/lon |
+| SAMPLER | autosampler parameters (bottle count, sampling time) |
+| NAVIGATION | GPS-related parameters |
+| PH_BOX | parameters measured with the pH box |
+| PCO2_BOX | parameters measured with the pCO2 box |
+| SYSTEM | technical parameters describing the system's state |
+
+### Levels
+
+- `RAW`: raw instrument counts, uncalibrated
+- `ADJUSTED`: instrument counts with the master instrument calibration applied — use this for most analysis
+- `CALIBRATED_WITH_SAMPLES`: ADJUSTED values further corrected against lab-measured samples (e.g. Chl-a)
+- `SENSOR_ADJUSTED` / `FIELDCAL`: additional correction levels used for some historical or sensor-specific data
+
+### If a signal you expect is missing
+
+`get_available_parameters()` only returns the paths your key currently has access to — it is not a complete list of every signal that exists for a vessel. If you expect a signal that isn't showing up, your key's access may simply not have been granted for it yet. Contact miljoinformatikk@niva.no with the vessel/signal you need and we'll update your key's access.
 
 ## General information
 
