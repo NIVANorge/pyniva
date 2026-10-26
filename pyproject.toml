@@ -19,7 +19,7 @@ numpy = ">=2.3.0"
 requests = "^2.24.0"
 pyjwt = "^2.12.0"
 cryptography = ">=50.0.0,<51.0.0"
-setuptools = "^83.0.0"
+setuptools = ">=83,<85"
 
 [tool.poetry.group.dev.dependencies]
 pytest = "^9.0.3"
